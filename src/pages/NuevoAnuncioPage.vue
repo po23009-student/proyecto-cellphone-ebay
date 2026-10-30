@@ -2,7 +2,7 @@
   <div class="row justify-center q-ma-xs">
     <h3>NUEVO ANUNCIO</h3>
   </div>
-  <q-form>
+  <q-form @submit="guardarAnuncio">
     <div class="row q-ma-lg justify-center">
       <div class="col-12 col-md-6" style="border: 2px solid #2a7c13">
         <q-option-group
@@ -14,11 +14,21 @@
         />
         <q-input v-model="marcaText" outlined label="Marca" class="q-ma-lg" />
         <q-input v-model="modeloText" outlined label="Modelo" class="q-ma-lg" />
-        <q-input v-model="pantallaText" outlined label="Pantalla (Pulgadas)" class="q-ma-lg" />
+        <q-input v-model="colorTelText" outlined label="Color" class="q-ma-lg" />
+        <q-input
+          v-model.number="pantallaText"
+          type="number"
+          step="2"
+          min="0"
+          outlined
+          label="Pantalla (Pulgadas)"
+          class="q-ma-lg"
+        />
+
         <q-select
           outlined
-          v-model="modeloSistema"
-          :options="opcionesSistema"
+          v-model="sistemaOperativo"
+          :options="opcionesSistemaOperativo"
           label="Sistema"
           class="q-ma-lg"
         />
@@ -27,7 +37,7 @@
           <div class="col">
             <q-input
               outlined
-              v-model.number="modeloRom"
+              v-model.number="gbRom"
               step="2"
               type="number"
               class="q-ma-lg"
@@ -39,7 +49,7 @@
 
         <q-input
           outlined
-          v-model.number="modeloRam"
+          v-model.number="gbRam"
           step="2"
           type="number"
           class="q-ma-lg"
@@ -83,7 +93,7 @@
               label="Cancelar"
               to="/ventacelulares"
             />
-            <q-btn color="black" text-color="white" icon="save" label="Crear" />
+            <q-btn color="black" text-color="white" type="submit" icon="save" label="Crear" />
           </div>
         </div>
       </div>
@@ -96,8 +106,15 @@
         <div class="row q-ma-lg items-center q-col-gutter-md">
           <div class="col-auto">
             <div class="column q-gutter-md">
-              <q-btn round color="black" text-color="white" icon="add" />
-              <q-btn round color="black" text-color="white" icon="remove" />
+              <q-btn round color="primary" text-color="white" icon="add">
+                <q-file
+                  v-model="filesImages"
+                  multiple
+                  accept=".jpg, image/*"
+                  style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer"
+                />
+              </q-btn>
+              <q-btn round color="primary" text-color="white" icon="remove" />
             </div>
           </div>
 
@@ -145,8 +162,6 @@
               style="width: 250px; height: 350px"
             >
               <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
-              <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
-              <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
             </q-carousel>
           </div>
         </div>
@@ -157,29 +172,61 @@
 
 <script setup>
 import { ref } from 'vue'
+import { collection, addDoc } from 'firebase/firestore'
 
 const marcaText = ref('')
+const colorTelText = ref('')
+const pantallaText = ref(0.0)
 const tituloText = ref('')
 const vendedorText = ref('')
 const telefonoText = ref('')
+const modeloTelText = ref('')
 const descripcionText = ref('')
-const precioText = ref('')
+const precioText = ref(0.0)
 
-const modeloSistema = ref(null)
-const opcionesSistema = ['Android', 'Windows', 'iOS']
-const modeloRam = ref(0)
-const modeloRom = ref(0)
-const estadoSeleccionado = ref('op1')
+const sistemaOperativo = ref(null)
+const opcionesSistemaOperativo = ['Android', 'Windows', 'iOS']
+const gbRam = ref(0.0)
+const gbRom = ref(0.0)
+const estadoSeleccionado = ref('Nuevo')
 const opcionesEstado = [
   {
     label: 'Nuevo',
-    value: 'op1',
+    value: 'Nuevo',
   },
   {
     label: 'Usado',
-    value: 'op2',
+    value: 'Usado',
   },
 ]
 
+const filesImages = ref([])
 const slide = ref(1)
+const anuncio = ref({
+  titulo_anuncio: tituloText,
+  color_telefono: colorTelText,
+  descripcion_anuncio: descripcionText,
+  estado_telefono: estadoSeleccionado,
+  marca_telefono: marcaText,
+  modelo_telefono: modeloTelText,
+  pantalla_pulgadas_telefono: pantallaText,
+  precio_telefono: precioText,
+  ram_gb_telefono: gbRam,
+  rom_gb_telefono: gbRom,
+  sistema_operativo_telefono: sistemaOperativo,
+  telefono_vendedor: telefonoText,
+  vendedor: vendedorText,
+})
+
+async function guardarAnuncio() {
+  try {
+    const docRef = await addDoc(collection(db, 'anuncios'), anuncio.value)
+    console.log('Document written with ID: ', docRef.id)
+  } catch (e) {
+    $q.notify({
+      type: 'negative',
+      message: `Error al agregar el anuncio: ${e.message}`,
+    })
+  }
+}
 </script>
