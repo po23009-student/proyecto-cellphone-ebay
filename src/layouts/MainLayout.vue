@@ -1,18 +1,41 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-btn
+          flat
+          dense
+          round
+          icon="menu"
+          aria-label="Menu"
+          class="lt-sm"
+          @click="toggleLeftDrawer"
+        />
 
-        <q-toolbar-title> Quasar App </q-toolbar-title>
+        <q-icon name="campaign" size="lg" class="gt-xs" />
+        <q-toolbar-title class="gt-xs"> Tienda CellPhone </q-toolbar-title>
+        <q-btn icon="home" label="Inicio" to="/" class="gt-xs" />
+        <q-btn icon="sym_o_add_ad" label="Nuevo Anuncio" to="/nuevoanuncio" class="gt-xs" />
+        <q-btn icon="dataset" label="Estadisticas" to="" class="gt-xs" />
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn round icon="add" color="positive" />
+        <q-avatar
+          square
+          size="50px"
+          font-size="40px"
+          color="primary"
+          text-color="white"
+          icon="shopping_cart"
+        />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
+    <q-drawer v-model="leftDrawerOpen" bordered>
       <q-list>
-        <q-item-label header> Essential Links </q-item-label>
+        <q-item-label header>
+          <q-icon name="campaign" size="lg" />
+          <q-toolbar-title> Tienda CellPhone </q-toolbar-title>
+        </q-item-label>
 
         <EssentialLink v-for="link in linksList" :key="link.label" v-bind="link" />
       </q-list>
@@ -30,46 +53,22 @@ import EssentialLink from '@/components/EssentialLink.vue'
 
 const linksList = [
   {
-    label: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
+    label: 'Inicio',
+    caption: '',
+    icon: 'home',
+    link: '/',
   },
   {
-    label: 'GitHub',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
+    label: 'Nuevo Anuncio',
+    caption: '',
+    icon: 'sym_o_add_ad',
+    link: '/nuevoanuncio',
   },
   {
-    label: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    label: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    label: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    label: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    label: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
+    label: 'Estadísticas',
+    caption: '',
+    icon: 'dataset',
+    link: '/',
   },
 ]
 

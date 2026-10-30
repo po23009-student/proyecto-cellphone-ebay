@@ -7,6 +7,14 @@
         style="width: 200px; height: 200px"
       />
 
+      <q-btn
+        class="q-mt-md"
+        color="primary"
+        to="/ventacelulares"
+        label="Ir a Pagina de Ventas"
+        no-caps
+      />
+
       <q-btn class="q-mt-md" color="primary" to="/second" label="Go to Second Page" no-caps />
     </div>
   </q-page>
