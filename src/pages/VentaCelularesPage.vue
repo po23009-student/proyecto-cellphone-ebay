@@ -53,11 +53,28 @@
         </q-card>
 
         <div class="row q-col-gutter-lg">
-          <PhoneCard class="col-6 col-sm-5 col-md-2" />
-          <PhoneCard class="col-6 col-sm-5 col-md-2" />
-          <PhoneCard class="col-6 col-sm-5 col-md-2" />
-          <PhoneCard class="col-6 col-sm-5 col-md-2" />
-          <PhoneCard class="col-6 col-sm-5 col-md-2" />
+          <q-circular-progress
+            indeterminate
+            size="100px"
+            :thickness="0.7"
+            color="secondary"
+            center-color="dark"
+            class="q-ma-md"
+            v-if="cargando"
+          />
+          <PhoneCard
+            v-for="(anuncio, key) in listaAnuncios"
+            :key="key"
+            :idAnuncio="anuncio.id"
+            :precioTelefono="anuncio.precio_telefono"
+            :marcaTelefono="anuncio.marca_telefono"
+            :modeloTelefono="anuncio.modelo_telefono"
+            :pantallaPulgadasTelefono="anuncio.pantalla_pulgadas_telefono"
+            :romGbTelefono="anuncio.rom_gb_telefono"
+            :ramGbTelefono="anuncio.ram_gb_telefono"
+            :colorTelefono="anuncio.color_telefono"
+            class="col-6 col-sm-5 col-md-2"
+          />
         </div>
 
         <div class="row justify-center items-center q-mt-xl q-gutter-lg">
@@ -86,10 +103,36 @@
 <script setup>
 import PhoneCard from '@/components/PhoneCard.vue'
 import MenuFiltro from '@/components/MenuFiltro.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from '@/boot/firebase'
 
+const $q = useQuasar()
+const cargando = ref(true)
 const precioInicial = ref(0.0)
 const precioFinal = ref(0.0)
 const articulosPorPagina = ref(15)
 const paginaActual = ref(1)
+
+const listaAnuncios = ref([])
+
+onMounted(() => {
+  obtenerTodosDocumentos()
+})
+
+async function obtenerTodosDocumentos() {
+  try {
+    const anuncios = await getDocs(collection(db, 'anuncios'))
+    anuncios.forEach((doc) => {
+      listaAnuncios.value.push({ id: doc.id, ...doc.data() })
+    })
+    cargando.value = false
+  } catch (e) {
+    $q.notify({
+      type: 'negative',
+      message: `Error al obtener los anuncios: ${e.message}`,
+    })
+  }
+}
 </script>

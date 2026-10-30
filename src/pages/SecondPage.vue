@@ -31,7 +31,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
-import { collection, addDoc, getDocs } from 'firebase/firestore'
+import { collection, addDoc, getDocs, doc, updateDoc } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 import { api } from '@/boot/axios'
 //import { mdiFileKey } from '@quasar/extras/mdi-v7'
@@ -124,6 +124,13 @@ async function subirImagenes() {
 
     if (response.status === 201) {
       console.log(`Imagen subida correctamente: ${file.name}`)
+
+      let anuncioTelefonoDoc = doc(db, 'anuncios', idDocumento)
+
+      await updateDoc(anuncioTelefonoDoc, {
+        ruta_imagenes_telefono: `${api.defaults.baseURL}${coleccionCouchdb}${idDocumento}`,
+      })
+
       rev = response.data.rev
     } else {
       console.log(`Error al subir la imagen: ${file.name}`)
@@ -132,7 +139,7 @@ async function subirImagenes() {
 }
 
 async function obtenerImagenes() {
-  let idDocumento = '5jgCcRQvdBwgtvnoOjRV'
+  let idDocumento = listaAnuncios.value[0].id
   let response = await api.get(`/imagenesfpi/${idDocumento}`)
 
   if (response.status === 200) {
@@ -148,7 +155,7 @@ async function obtenerImagenes() {
   //recorro todos los attachments
   for (let archivo in documentoAttach.value._attachments) {
     let nombreArchivo = archivo
-    let urlArchivo = `https://couchdbbackend.esaapp.com/imagenesfpi/${idDocumento}/${nombreArchivo}`
+    let urlArchivo = `${api.defaults.baseURL}/imagenesfpi/${idDocumento}/${nombreArchivo}`
     let response2 = await api.get(urlArchivo, { responseType: 'blob' })
 
     if (response2.status === 200) {
