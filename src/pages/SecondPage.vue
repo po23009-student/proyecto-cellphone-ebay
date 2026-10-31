@@ -53,6 +53,11 @@ async function agregarAnuncio() {
   try {
     const docRef = await addDoc(collection(db, 'anuncios'), anuncio.value)
     console.log('Document written with ID: ', docRef.id)
+    $q.notify({
+      type: 'positive',
+      message: 'Anuncio Guardado Exitosamente',
+      position: 'top',
+    })
   } catch (e) {
     $q.notify({
       type: 'negative',
@@ -82,6 +87,7 @@ async function subirImagenes() {
     $q.notify({
       type: 'negative',
       message: 'No se han seleccionado imágenes para subir',
+      position: 'top',
     })
     return
   }
