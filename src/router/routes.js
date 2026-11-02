@@ -6,16 +6,10 @@ const routes = [
       { path: '', component: () => import('@/pages/IndexPage.vue') },
       { path: 'second', component: () => import('@/pages/SecondPage.vue') },
       { path: 'ventacelulares', component: () => import('@/pages/VentaCelularesPage.vue') },
+      { path: 'nuevoanuncio', component: () => import('@/pages/NuevoAnuncioPage.vue') },
+      { path: 'celulardetalle/:cid', component: () => import('@/pages/TelefonoDetallePage.vue') },
+      { path: 'estadisticas', component: () => import('@/pages/EstadisticasPage.vue') },
     ],
-  },
-
-  {
-    path: '/celulardetalle/:cid',
-    component: () => import('@/pages/PhonePage.vue'),
-  },
-  {
-    path: '/nuevoanuncio',
-    component: () => import('@/pages/NuevoAnuncioPage.vue'),
   },
 
   // Always leave this as last one,

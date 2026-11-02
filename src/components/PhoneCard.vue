@@ -1,24 +1,27 @@
 <template>
-  <q-card class="q-ma-md" clickable @click="$router.push(`/celulardetalle/${anuncio_id}`)">
-    <q-img src="" alt="Samsung J6" style="height: 150px" />
+  <q-card
+    class="q-ma-md phone-card"
+    clickable
+    :imagenesTelefono="imagenesLocales"
+    @click="$router.push(`/celulardetalle/${idAnuncio}`)"
+  >
+    {{ idAnuncio }}
+    <q-img :src="imagenesLocales[0]" fit="contain" alt="Imagen del teléfono" />
 
-    <q-card-section>
-      <q-img :src="imagenesLocales[0]" style="width: 200px; height: 200px" fit="contain" />
+    <q-card-section class="phone-info">
+      <div class="text-h6 text-primary">$ {{ precioTelefono }}</div>
 
-      <!--<q-img class="q-my-xs" :src="imagenesLocales[0]" fit="contain" />-->
-      <div class="text-h6 text-primary q-mt-sm">$ {{ precioTelefono }}</div>
-      <div class="text-h4">
-        {{ marcaTelefono }} {{ modeloTelefono }}, Pantalla de {{ pantallaPulgadasTelefono }}
+      <div>
+        {{ marcaTelefono }} {{ modeloTelefono }}, Pantalla de {{ pantallaPulgadasTelefono }}"
       </div>
-      <div class="text-h4">
-        {{ romGbTelefono }}GB, {{ ramGbTelefono }}GB Ram, Color {{ colorTelefono }}
-      </div>
+
+      <div>{{ romGbTelefono }}GB, {{ ramGbTelefono }}GB RAM, Color {{ colorTelefono }}</div>
     </q-card-section>
   </q-card>
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { api } from '@/boot/axios'
 
 const props = defineProps({
@@ -36,8 +39,8 @@ const imagenessrc = ref([])
 const documentoAttach = ref({})
 const imagenesLocales = ref([])
 
-onBeforeMount(async () => {
-  await obtenerImagenes()
+onMounted(() => {
+  obtenerImagenes()
 })
 
 async function obtenerImagenes() {

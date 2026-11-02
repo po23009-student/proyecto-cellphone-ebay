@@ -1,7 +1,6 @@
 <template>
   <div class="row justify-center q-ma-xs">
     <h3>NUEVO ANUNCIO</h3>
-    {{ anuncio.ruta_imagenes_telefono }}
   </div>
   <q-form @submit="guardarAnuncio">
     <div class="row q-ma-lg justify-center">
@@ -174,24 +173,9 @@
               </thead>
               <tbody>
                 <tr>
-                  <td>1</td>
-                  <td>145 kb</td>
-                  <td>jpg</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>145 kb</td>
-                  <td>png</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td>145 kb</td>
-                  <td>png</td>
-                </tr>
-                <tr>
-                  <td>4</td>
-                  <td>145 kb</td>
-                  <td>jpg</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
                 </tr>
               </tbody>
             </table>
@@ -218,7 +202,7 @@
 <script setup>
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
-import { collection, addDoc } from 'firebase/firestore'
+import { collection, doc, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 import { api } from '@/boot/axios'
 
@@ -267,6 +251,7 @@ const anuncio = ref({
   telefono_vendedor: telefonoText,
   vendedor: vendedorText,
   ruta_imagenes_telefono: '',
+  fecha_creacion: serverTimestamp(),
 })
 
 async function subirImagenes(idDocumento) {
@@ -325,8 +310,11 @@ async function subirImagenes(idDocumento) {
 async function guardarAnuncio() {
   try {
     const docRef = await addDoc(collection(db, 'anuncios'), anuncio.value)
-    console.log(`ID del nuevo documento: ${docRef.id}`)
     await subirImagenes(docRef.id)
+
+    await updateDoc(doc(db, 'anuncios', docRef.id), {
+      ruta_imagenes_telefono: anuncio.value.ruta_imagenes_telefono,
+    })
 
     $q.notify({
       type: 'positive',

@@ -4,7 +4,6 @@
       <div class="col-md-2 gt-sm">
         <MenuFiltro />
       </div>
-
       <div class="col-12 col-md-10">
         <q-card flat bordered class="q-mb-lg">
           <q-card-section class="row items-center justify-between q-gutter-md">
@@ -37,9 +36,21 @@
             <div class="row items-center q-gutter-sm">
               <span class="text-subtitle2"> Ordenar por: </span>
 
-              <q-btn flat color="primary" icon="arrow_upward" label="Precio" />
+              <q-btn
+                flat
+                color="primary"
+                :icon="precioAscendente ? 'arrow_upward' : 'arrow_downward'"
+                label="Precio"
+                @click="ordenarPorPrecio"
+              />
 
-              <q-btn flat color="primary" icon="arrow_upward" label="Fecha" />
+              <q-btn
+                flat
+                color="primary"
+                :icon="fechaAscendente ? 'arrow_upward' : 'arrow_downward'"
+                label="Fecha"
+                @click="ordenarPorFecha"
+              />
 
               <q-btn flat round color="secondary" icon="filter_alt" class="lt-md">
                 <q-menu>
@@ -63,7 +74,7 @@
             v-if="cargando"
           />
           <PhoneCard
-            v-for="(anuncio, key) in listaAnuncios"
+            v-for="(anuncio, key) in anunciosFiltrados"
             :key="key"
             :idAnuncio="anuncio.id"
             :precioTelefono="anuncio.precio_telefono"
@@ -103,23 +114,62 @@
 <script setup>
 import PhoneCard from '@/components/PhoneCard.vue'
 import MenuFiltro from '@/components/MenuFiltro.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 
 const $q = useQuasar()
+
 const cargando = ref(true)
+const precioAscendente = ref(false)
+const fechaAscendente = ref(false)
 const precioInicial = ref(0.0)
-const precioFinal = ref(0.0)
+const precioFinal = ref(Infinity)
 const articulosPorPagina = ref(15)
 const paginaActual = ref(1)
 
 const listaAnuncios = ref([])
 
+const anunciosFiltrados = computed(() => {
+  return listaAnuncios.value
+    .filter(
+      (anuncio) =>
+        anuncio.precio_telefono >= precioInicial.value &&
+        anuncio.precio_telefono <= precioFinal.value,
+    )
+    .sort((anuncioA, anuncioB) => {
+      const fechaA = anuncioA.fecha_creacion?.toDate().getTime()
+      const fechaB = anuncioB.fecha_creacion?.toDate().getTime()
+
+      return fechaAscendente.value ? fechaA - fechaB : fechaB - fechaA
+    })
+    .sort((anuncioA, anuncioB) =>
+      precioAscendente.value
+        ? anuncioB.precio_telefono - anuncioA.precio_telefono
+        : anuncioA.precio_telefono - anuncioB.precio_telefono,
+    )
+})
+
 onMounted(() => {
   obtenerTodosDocumentos()
 })
+
+function ordenarPorPrecio() {
+  if (precioAscendente.value) {
+    precioAscendente.value = false
+  } else {
+    precioAscendente.value = true
+  }
+}
+
+function ordenarPorFecha() {
+  if (fechaAscendente.value) {
+    fechaAscendente.value = false
+  } else {
+    fechaAscendente.value = true
+  }
+}
 
 async function obtenerTodosDocumentos() {
   try {

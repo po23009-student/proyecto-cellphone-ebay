@@ -16,7 +16,7 @@
         <q-toolbar-title class="gt-xs"> Tienda CellPhone </q-toolbar-title>
         <q-btn icon="home" label="Inicio" to="/" class="gt-xs" />
         <q-btn icon="sym_o_add_ad" label="Nuevo Anuncio" to="/nuevoanuncio" class="gt-xs" />
-        <q-btn icon="dataset" label="Estadisticas" to="" class="gt-xs" />
+        <q-btn icon="dataset" label="Estadisticas" to="/estadisticas" class="gt-xs" />
 
         <q-btn round icon="add" color="positive" />
         <q-avatar
