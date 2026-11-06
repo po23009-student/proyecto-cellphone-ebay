@@ -2,7 +2,12 @@
   <q-page class="q-pa-md">
     <div class="row q-col-gutter-lg">
       <div class="col-md-2 gt-sm">
-        <MenuFiltro />
+        <MenuFiltro
+          @toogle-nuevo="eventoFiltrarPorNuevo"
+          @marca-seleccionada="eventoFiltrarPorMarca"
+          @sistema-seleccionado="eventoFiltrarPorSistema"
+          @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
+        />
       </div>
       <div class="col-12 col-md-10">
         <q-card flat bordered class="q-mb-lg">
@@ -73,6 +78,9 @@
             class="q-ma-md"
             v-if="cargando"
           />
+
+          <h3 v-if="anunciosFiltrados.length == 0">No hay artículos</h3>
+
           <PhoneCard
             v-for="(anuncio, key) in anunciosFiltrados"
             :key="key"
@@ -122,17 +130,22 @@ import { db } from '@/boot/firebase'
 const $q = useQuasar()
 
 const cargando = ref(true)
+const filtrarPorNuevo = ref(false)
 const precioAscendente = ref(false)
 const fechaAscendente = ref(false)
 const precioInicial = ref(0.0)
-const precioFinal = ref(Infinity)
+const precioFinal = ref(5000.0)
 const articulosPorPagina = ref(15)
 const paginaActual = ref(1)
+
+const listaOpcionesSeleccionadasMarca = ref([])
+const listaOpcionesSeleccionadasPantalla = ref([])
+const listaOpcionesSeleccionadasSistema = ref([])
 
 const listaAnuncios = ref([])
 
 const anunciosFiltrados = computed(() => {
-  return listaAnuncios.value
+  let listaAnunciosFiltrados = listaAnuncios.value
     .filter(
       (anuncio) =>
         anuncio.precio_telefono >= precioInicial.value &&
@@ -149,6 +162,32 @@ const anunciosFiltrados = computed(() => {
         ? anuncioB.precio_telefono - anuncioA.precio_telefono
         : anuncioA.precio_telefono - anuncioB.precio_telefono,
     )
+
+  if (filtrarPorNuevo.value) {
+    listaAnunciosFiltrados = listaAnunciosFiltrados.filter(
+      (anuncio) => anuncio.estado_telefono === 'Nuevo',
+    )
+  }
+
+  if (listaOpcionesSeleccionadasMarca.value.length > 0) {
+    listaAnunciosFiltrados = listaAnunciosFiltrados.filter((anuncio) =>
+      listaOpcionesSeleccionadasMarca.value.includes(anuncio.marca_telefono),
+    )
+  }
+
+  if (listaOpcionesSeleccionadasPantalla.value.length > 0) {
+    listaAnunciosFiltrados = listaAnunciosFiltrados.filter((anuncio) =>
+      listaOpcionesSeleccionadasPantalla.value.includes(anuncio.pantalla_pulgadas_telefono),
+    )
+  }
+
+  if (listaOpcionesSeleccionadasSistema.value.length > 0) {
+    listaAnunciosFiltrados = listaAnunciosFiltrados.filter((anuncio) =>
+      listaOpcionesSeleccionadasSistema.value.includes(anuncio.sistema_operativo_telefono),
+    )
+  }
+
+  return listaAnunciosFiltrados
 })
 
 onMounted(() => {
@@ -173,6 +212,7 @@ function ordenarPorFecha() {
 
 async function obtenerTodosDocumentos() {
   try {
+    listaAnuncios.value = []
     const anuncios = await getDocs(collection(db, 'anuncios'))
     anuncios.forEach((doc) => {
       listaAnuncios.value.push({ id: doc.id, ...doc.data() })
@@ -184,5 +224,21 @@ async function obtenerTodosDocumentos() {
       message: `Error al obtener los anuncios: ${e.message}`,
     })
   }
+}
+
+function eventoFiltrarPorNuevo(event) {
+  filtrarPorNuevo.value = event.valorNuevo
+}
+
+function eventoFiltrarPorMarca(event) {
+  listaOpcionesSeleccionadasMarca.value = event.marcasSeleccionadas
+}
+
+function eventoFiltrarPorPulgadasPantalla(event) {
+  listaOpcionesSeleccionadasPantalla.value = event.pantallasSeleccionadas
+}
+
+function eventoFiltrarPorSistema(event) {
+  listaOpcionesSeleccionadasSistema.value = event.sistemasSeleccionados
 }
 </script>

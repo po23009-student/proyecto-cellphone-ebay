@@ -5,7 +5,6 @@
     :imagenesTelefono="imagenesLocales"
     @click="$router.push(`/celulardetalle/${idAnuncio}`)"
   >
-    {{ idAnuncio }}
     <q-img :src="imagenesLocales[0]" fit="contain" alt="Imagen del teléfono" />
 
     <q-card-section class="phone-info">
@@ -21,7 +20,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { api } from '@/boot/axios'
 
 const props = defineProps({
@@ -43,7 +42,13 @@ onMounted(() => {
   obtenerImagenes()
 })
 
+watch(
+  () => props.idAnuncio,
+  () => obtenerImagenes(),
+)
+
 async function obtenerImagenes() {
+  imagenesLocales.value = []
   let response = await api.get(`/imagenesfpi/${props.idAnuncio}`)
 
   if (response.status === 200) {
