@@ -15,6 +15,7 @@
         <q-icon name="campaign" size="lg" class="gt-xs" />
         <q-toolbar-title class="gt-xs"> Tienda CellPhone </q-toolbar-title>
         <q-btn icon="home" label="Inicio" to="/" class="gt-xs" />
+        <q-btn icon="shopping_bag" label="Ventas" to="/ventacelulares" class="gt-xs" />
         <q-btn icon="sym_o_add_ad" label="Nuevo Anuncio" to="/nuevoanuncio" class="gt-xs" />
         <q-btn icon="dataset" label="Estadisticas" to="/estadisticas" class="gt-xs" />
 
@@ -59,16 +60,22 @@ const linksList = [
     link: '/',
   },
   {
+    label: 'Ventas',
+    caption: '',
+    icon: 'shopping_bag',
+    link: 'ventacelulares',
+  },
+  {
     label: 'Nuevo Anuncio',
     caption: '',
     icon: 'sym_o_add_ad',
-    link: '/nuevoanuncio',
+    link: 'nuevoanuncio',
   },
   {
     label: 'Estadísticas',
     caption: '',
     icon: 'dataset',
-    link: '/',
+    link: 'estadisticas',
   },
 ]
 

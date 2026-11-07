@@ -60,7 +60,12 @@
               <q-btn flat round color="secondary" icon="filter_alt" class="lt-md">
                 <q-menu>
                   <div style="width: 250px">
-                    <MenuFiltro />
+                    <MenuFiltro
+                      @toogle-nuevo="eventoFiltrarPorNuevo"
+                      @marca-seleccionada="eventoFiltrarPorMarca"
+                      @sistema-seleccionado="eventoFiltrarPorSistema"
+                      @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
+                    />
                   </div>
                 </q-menu>
               </q-btn>
@@ -99,7 +104,8 @@
         <div class="row justify-center items-center q-mt-xl q-gutter-lg">
           <q-pagination
             v-model="paginaActual"
-            :max="5"
+            :max="ultimaPagina"
+            max-pages="7"
             direction-links
             color="accent"
             active-color="secondary"
@@ -107,7 +113,7 @@
 
           <q-select
             v-model="articulosPorPagina"
-            :options="[5, 10, 20, 50]"
+            :options="[5, 10, 15, 20, 25, 50]"
             label="Artículos por página"
             dense
             outlined
@@ -124,7 +130,7 @@ import PhoneCard from '@/components/PhoneCard.vue'
 import MenuFiltro from '@/components/MenuFiltro.vue'
 import { ref, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, query, getDocs, limit, startAfter } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 
 const $q = useQuasar()
@@ -137,12 +143,13 @@ const precioInicial = ref(0.0)
 const precioFinal = ref(0.0)
 const articulosPorPagina = ref(15)
 const paginaActual = ref(1)
+const ultimaPagina = ref(7)
 
 const listaOpcionesSeleccionadasMarca = ref([])
 const listaOpcionesSeleccionadasPantalla = ref([])
 const listaOpcionesSeleccionadasSistema = ref([])
-
 const listaAnuncios = ref([])
+const anunciosDocumentos = ref([])
 
 const anunciosFiltrados = computed(() => {
   let listaAnunciosFiltrados = listaAnuncios.value
@@ -191,7 +198,7 @@ const anunciosFiltrados = computed(() => {
 })
 
 onMounted(() => {
-  obtenerTodosDocumentos()
+  obtenerDocumentos(null)
 })
 
 function determinarRangoPrecios() {
@@ -222,14 +229,34 @@ function ordenarPorFecha() {
   }
 }
 
-async function obtenerTodosDocumentos() {
+async function obtenerDocumentos(ultimoDocumento) {
   try {
     listaAnuncios.value = []
-    const anuncios = await getDocs(collection(db, 'anuncios'))
-    anuncios.forEach((doc) => {
-      listaAnuncios.value.push({ id: doc.id, ...doc.data() })
-    })
+
+    if (!ultimoDocumento) {
+      anunciosDocumentos.value = await getDocs(
+        query(collection(db, 'anuncios'), limit(articulosPorPagina.value)),
+      )
+
+      anunciosDocumentos.value.forEach((doc) => {
+        listaAnuncios.value.push({ id: doc.id, ...doc.data() })
+      })
+    } else {
+      anunciosDocumentos.value = await getDocs(
+        query(
+          collection(db, 'anuncios'),
+          startAfter(ultimoDocumento),
+          limit(articulosPorPagina.value),
+        ),
+      )
+
+      anunciosDocumentos.value.forEach((doc) => {
+        listaAnuncios.value.push({ id: doc.id, ...doc.data() })
+      })
+    }
+
     determinarRangoPrecios()
+
     cargando.value = false
   } catch (e) {
     $q.notify({

@@ -2,8 +2,24 @@
   <div class="row">
     <div class="col-12 col-md-6">
       <div>
-        <q-carousel animated v-model="slide" arrows navigation infinite>
-          <q-carousel-slide :name="1" img-src="../assets/samsung-1.jpeg" />
+        <q-carousel
+          v-model="slide"
+          animated
+          arrows
+          navigation
+          infinite
+          control-type="regular"
+          control-color="primary"
+          style="width: 70%; height: 400px; margin: 0 auto; padding: 0"
+        >
+          <q-carousel-slide
+            v-for="(imagen, index) in imagenesLocales"
+            :key="index"
+            :name="index + 1"
+            class="flex flex-center"
+          >
+            <q-img :src="imagen" fit="contain" style="width: 100%; height: 100%" />
+          </q-carousel-slide>
         </q-carousel>
       </div>
     </div>
@@ -71,13 +87,19 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
+import { api } from '@/boot/axios'
 
 const slide = ref(1)
 const ruta = useRoute()
 const datosDocumento = ref({})
 
+const imagenessrc = ref([])
+const documentoAttach = ref({})
+const imagenesLocales = ref([])
+
 onMounted(() => {
   obtenerDocumento(ruta.params.cid)
+  obtenerImagenes(ruta.params.cid)
 })
 
 async function obtenerDocumento(idDocumento) {
@@ -85,5 +107,31 @@ async function obtenerDocumento(idDocumento) {
   const docSnap = await getDoc(docRef)
 
   datosDocumento.value = docSnap.data()
+}
+
+async function obtenerImagenes(idDocumento) {
+  let response = await api.get(`/imagenesfpi/${idDocumento}`)
+
+  if (response.status === 200) {
+    documentoAttach.value = response.data
+    imagenessrc.value = []
+    for (let att in documentoAttach.value._attachments) {
+      let attname = att
+
+      let atturl = `${api.getUri()}/imagenesfpi/${idDocumento}/${attname}`
+      imagenessrc.value.push(atturl)
+    }
+  }
+
+  for (let archivo in documentoAttach.value._attachments) {
+    let nombreArchivo = archivo
+    let urlArchivo = `${api.defaults.baseURL}/imagenesfpi/${idDocumento}/${nombreArchivo}`
+    let response2 = await api.get(urlArchivo, { responseType: 'blob' })
+
+    if (response2.status === 200) {
+      let blob = response2.data
+      imagenesLocales.value.push(URL.createObjectURL(blob))
+    }
+  }
 }
 </script>
