@@ -79,7 +79,7 @@
             v-if="cargando"
           />
 
-          <h3 v-if="anunciosFiltrados.length == 0">No hay artículos</h3>
+          <h3 v-if="cargando == false && anunciosFiltrados.length == 0">No hay artículos</h3>
 
           <PhoneCard
             v-for="(anuncio, key) in anunciosFiltrados"
@@ -134,7 +134,7 @@ const filtrarPorNuevo = ref(false)
 const precioAscendente = ref(false)
 const fechaAscendente = ref(false)
 const precioInicial = ref(0.0)
-const precioFinal = ref(5000.0)
+const precioFinal = ref(0.0)
 const articulosPorPagina = ref(15)
 const paginaActual = ref(1)
 
@@ -194,6 +194,18 @@ onMounted(() => {
   obtenerTodosDocumentos()
 })
 
+function determinarRangoPrecios() {
+  let listaPreciosAnuncios = listaAnuncios.value.map((anuncio) => anuncio.precio_telefono)
+
+  precioInicial.value = listaPreciosAnuncios.reduce((precioAnterior, precioSiguiente) =>
+    Math.min(precioAnterior, precioSiguiente),
+  )
+
+  precioFinal.value = listaPreciosAnuncios.reduce((precioAnterior, precioSiguiente) =>
+    Math.max(precioAnterior, precioSiguiente),
+  )
+}
+
 function ordenarPorPrecio() {
   if (precioAscendente.value) {
     precioAscendente.value = false
@@ -217,6 +229,7 @@ async function obtenerTodosDocumentos() {
     anuncios.forEach((doc) => {
       listaAnuncios.value.push({ id: doc.id, ...doc.data() })
     })
+    determinarRangoPrecios()
     cargando.value = false
   } catch (e) {
     $q.notify({
