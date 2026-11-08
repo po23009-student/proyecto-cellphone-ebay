@@ -128,7 +128,7 @@
 <script setup>
 import PhoneCard from '@/components/PhoneCard.vue'
 import MenuFiltro from '@/components/MenuFiltro.vue'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { collection, query, getDocs, limit, startAfter } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
@@ -141,15 +141,34 @@ const precioAscendente = ref(false)
 const fechaAscendente = ref(false)
 const precioInicial = ref(0.0)
 const precioFinal = ref(0.0)
-const articulosPorPagina = ref(15)
+const articulosPorPagina = ref(5)
 const paginaActual = ref(1)
-const ultimaPagina = ref(7)
+const ultimaPagina = ref(5)
 
 const listaOpcionesSeleccionadasMarca = ref([])
 const listaOpcionesSeleccionadasPantalla = ref([])
 const listaOpcionesSeleccionadasSistema = ref([])
 const listaAnuncios = ref([])
-const anunciosDocumentos = ref([])
+const ultimoDocumentoMostrado = ref(null)
+
+watch(paginaActual, async (newValue, oldValue) => {
+  if (newValue > 1) {
+    console.log(`${oldValue} -> ${newValue}`)
+    console.log('realizar paginacion')
+    await obtenerDocumentos(ultimoDocumentoMostrado.value)
+
+    if (listaAnuncios.value.length == 0) {
+      ultimaPagina.value = oldValue
+    }
+  } else {
+    await obtenerDocumentos(null)
+  }
+})
+
+watch(articulosPorPagina, (newValue, oldValue) => {
+  console.log(`${oldValue} -> ${newValue}`)
+  obtenerDocumentos(ultimoDocumentoMostrado.value)
+})
 
 const anunciosFiltrados = computed(() => {
   let listaAnunciosFiltrados = listaAnuncios.value
@@ -234,29 +253,31 @@ async function obtenerDocumentos(ultimoDocumento) {
     listaAnuncios.value = []
 
     if (!ultimoDocumento) {
-      anunciosDocumentos.value = await getDocs(
+      const anunciosDocs = await getDocs(
         query(collection(db, 'anuncios'), limit(articulosPorPagina.value)),
       )
 
-      anunciosDocumentos.value.forEach((doc) => {
+      ultimoDocumentoMostrado.value = anunciosDocs.docs.at(-1)
+
+      anunciosDocs.forEach((doc) => {
         listaAnuncios.value.push({ id: doc.id, ...doc.data() })
       })
     } else {
-      anunciosDocumentos.value = await getDocs(
+      const anunciosDocs = await getDocs(
         query(
           collection(db, 'anuncios'),
           startAfter(ultimoDocumento),
           limit(articulosPorPagina.value),
         ),
       )
+      ultimoDocumentoMostrado.value = anunciosDocs.docs.at(-1)
 
-      anunciosDocumentos.value.forEach((doc) => {
+      anunciosDocs.forEach((doc) => {
         listaAnuncios.value.push({ id: doc.id, ...doc.data() })
       })
     }
 
     determinarRangoPrecios()
-
     cargando.value = false
   } catch (e) {
     $q.notify({

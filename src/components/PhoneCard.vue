@@ -1,13 +1,13 @@
 <template>
   <q-card
-    class="q-ma-md phone-card"
+    class="q-ma-md phone-card cursor-pointer"
     clickable
     :imagenesTelefono="imagenesLocales"
     @click="$router.push(`/celulardetalle/${idAnuncio}`)"
   >
     <q-img :src="imagenesLocales[0]" fit="contain" alt="Imagen del teléfono" />
 
-    <q-card-section class="phone-info">
+    <q-card-section>
       <div class="text-h6 text-primary">$ {{ precioTelefono }}</div>
 
       <div>
@@ -74,3 +74,16 @@ async function obtenerImagenes() {
   }
 }
 </script>
+
+<style scoped>
+.phone-card {
+  position: relative;
+  width: min(100%, 200px);
+  padding: 26px 24px 24px;
+  border: 2px solid primary;
+  text-align: center;
+}
+.phone-card:hover {
+  opacity: 0.7;
+}
+</style>
