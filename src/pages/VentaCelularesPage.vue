@@ -149,13 +149,21 @@ const listaOpcionesSeleccionadasMarca = ref([])
 const listaOpcionesSeleccionadasPantalla = ref([])
 const listaOpcionesSeleccionadasSistema = ref([])
 const listaAnuncios = ref([])
+const anunciosDocs = ref([])
+const primerDocumentoMostrado = ref(null)
 const ultimoDocumentoMostrado = ref(null)
 
 watch(paginaActual, async (newValue, oldValue) => {
   if (newValue > 1) {
     console.log(`${oldValue} -> ${newValue}`)
     console.log('realizar paginacion')
-    await obtenerDocumentos(ultimoDocumentoMostrado.value)
+
+    if (newValue > oldValue && Math.abs(newValue - oldValue) == 1) {
+      console.log('paginacion hacia adelante')
+      await obtenerDocumentos(ultimoDocumentoMostrado.value)
+    } else {
+      console.log('paginacion inversa')
+    }
 
     if (listaAnuncios.value.length == 0) {
       ultimaPagina.value = oldValue
@@ -251,31 +259,29 @@ function ordenarPorFecha() {
 async function obtenerDocumentos(ultimoDocumento) {
   try {
     listaAnuncios.value = []
+    anunciosDocs.value = []
+    cargando.value = true
 
     if (!ultimoDocumento) {
-      const anunciosDocs = await getDocs(
+      anunciosDocs.value = await getDocs(
         query(collection(db, 'anuncios'), limit(articulosPorPagina.value)),
       )
-
-      ultimoDocumentoMostrado.value = anunciosDocs.docs.at(-1)
-
-      anunciosDocs.forEach((doc) => {
-        listaAnuncios.value.push({ id: doc.id, ...doc.data() })
-      })
     } else {
-      const anunciosDocs = await getDocs(
+      anunciosDocs.value = await getDocs(
         query(
           collection(db, 'anuncios'),
           startAfter(ultimoDocumento),
           limit(articulosPorPagina.value),
         ),
       )
-      ultimoDocumentoMostrado.value = anunciosDocs.docs.at(-1)
-
-      anunciosDocs.forEach((doc) => {
-        listaAnuncios.value.push({ id: doc.id, ...doc.data() })
-      })
     }
+
+    primerDocumentoMostrado.value = anunciosDocs.value.docs.at(0)
+    ultimoDocumentoMostrado.value = anunciosDocs.value.docs.at(-1)
+
+    anunciosDocs.value.forEach((doc) => {
+      listaAnuncios.value.push({ id: doc.id, ...doc.data() })
+    })
 
     determinarRangoPrecios()
     cargando.value = false

@@ -183,14 +183,22 @@
 
           <div class="col-auto">
             <q-carousel
-              animated
               v-model="slide"
               arrows
               navigation
               infinite
-              style="width: 250px; height: 350px"
+              control-type="regular"
+              control-color="primary"
+              style="width: 70%; height: 400px; margin: 0 auto; padding: 0"
             >
-              <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
+              <q-carousel-slide
+                v-for="(imagen, index) in imagenesURL"
+                :key="imagen"
+                :name="index"
+                class="flex flex-center"
+              >
+                <q-img :src="imagen" fit="contain" style="width: 100%; height: 100%" />
+              </q-carousel-slide>
             </q-carousel>
           </div>
         </div>
@@ -201,7 +209,7 @@
 
 <script setup>
 import { useQuasar } from 'quasar'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { collection, doc, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 import { api } from '@/boot/axios'
@@ -252,6 +260,10 @@ const anuncio = ref({
   vendedor: vendedorText,
   ruta_imagenes_telefono: '',
   fecha_creacion: serverTimestamp(),
+})
+
+const imagenesURL = computed(() => {
+  return filesImages.value.map((file) => URL.createObjectURL(file))
 })
 
 async function subirImagenes(idDocumento) {
