@@ -45,6 +45,14 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <q-footer style="height: 40px">
+      <q-toolbar>
+        <p style="text-align: center; width: 100%; font-family: sans-serif">
+          <strong>Edgardo Alexander Palencia Ortiz (PO23009)</strong>
+        </p>
+      </q-toolbar>
+    </q-footer>
   </q-layout>
 </template>
 
