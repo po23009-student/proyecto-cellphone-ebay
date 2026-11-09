@@ -172,10 +172,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                <tr v-for="(imagen, index) in filesImages" :key="imagen" :name="index">
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ (imagen.size / 1024).toFixed(2) }} MB</td>
+                  <td>{{ imagen.type }}</td>
                 </tr>
               </tbody>
             </table>
@@ -184,6 +184,7 @@
           <div class="col-auto">
             <q-carousel
               v-model="slide"
+              animated
               arrows
               navigation
               infinite
@@ -194,7 +195,7 @@
               <q-carousel-slide
                 v-for="(imagen, index) in imagenesURL"
                 :key="imagen"
-                :name="index"
+                :name="index + 1"
                 class="flex flex-center"
               >
                 <q-img :src="imagen" fit="contain" style="width: 100%; height: 100%" />

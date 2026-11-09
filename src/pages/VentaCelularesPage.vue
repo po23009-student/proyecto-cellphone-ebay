@@ -130,7 +130,7 @@ import PhoneCard from '@/components/PhoneCard.vue'
 import MenuFiltro from '@/components/MenuFiltro.vue'
 import { ref, onMounted, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
-import { collection, query, getDocs, limit, startAfter } from 'firebase/firestore'
+import { collection, query, getDocs, limit, startAfter, endBefore } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 
 const $q = useQuasar()
@@ -160,22 +160,24 @@ watch(paginaActual, async (newValue, oldValue) => {
 
     if (newValue > oldValue && Math.abs(newValue - oldValue) == 1) {
       console.log('paginacion hacia adelante')
-      await obtenerDocumentos(ultimoDocumentoMostrado.value)
+      await obtenerDocumentos(null, ultimoDocumentoMostrado.value)
     } else {
       console.log('paginacion inversa')
+      await obtenerDocumentos(primerDocumentoMostrado.value, ultimoDocumentoMostrado.value)
     }
 
     if (listaAnuncios.value.length == 0) {
-      ultimaPagina.value = oldValue
+      ultimaPagina.value = newValue
+      cargando.value = false
     }
   } else {
-    await obtenerDocumentos(null)
+    await obtenerDocumentos(null, null)
   }
 })
 
 watch(articulosPorPagina, (newValue, oldValue) => {
   console.log(`${oldValue} -> ${newValue}`)
-  obtenerDocumentos(ultimoDocumentoMostrado.value)
+  obtenerDocumentos(null, ultimoDocumentoMostrado.value)
 })
 
 const anunciosFiltrados = computed(() => {
@@ -225,7 +227,7 @@ const anunciosFiltrados = computed(() => {
 })
 
 onMounted(() => {
-  obtenerDocumentos(null)
+  obtenerDocumentos(null, null)
 })
 
 function determinarRangoPrecios() {
@@ -256,15 +258,23 @@ function ordenarPorFecha() {
   }
 }
 
-async function obtenerDocumentos(ultimoDocumento) {
+async function obtenerDocumentos(primerDocumento, ultimoDocumento) {
   try {
     listaAnuncios.value = []
     anunciosDocs.value = []
     cargando.value = true
 
-    if (!ultimoDocumento) {
+    if (!primerDocumento && !ultimoDocumento) {
       anunciosDocs.value = await getDocs(
         query(collection(db, 'anuncios'), limit(articulosPorPagina.value)),
+      )
+    } else if (primerDocumento && ultimoDocumento) {
+      anunciosDocs.value = await getDocs(
+        query(
+          collection(db, 'anuncios'),
+          endBefore(primerDocumento),
+          limit(articulosPorPagina.value),
+        ),
       )
     } else {
       anunciosDocs.value = await getDocs(
