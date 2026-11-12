@@ -153,12 +153,20 @@
                 <q-file
                   v-model="filesImages"
                   multiple
+                  append
                   accept=".jpg, image/*"
                   style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer"
                   :rules="[(val) => !!val || 'Debe seleccionar una imagen']"
                 />
               </q-btn>
-              <q-btn round color="primary" text-color="white" icon="remove" />
+              <q-btn
+                round
+                :disable="deshabilitarBotonEliminarImagenes"
+                @click="eliminarUltimaImagen"
+                color="primary"
+                text-color="white"
+                icon="remove"
+              />
             </div>
           </div>
 
@@ -267,6 +275,8 @@ const imagenesURL = computed(() => {
   return filesImages.value.map((file) => URL.createObjectURL(file))
 })
 
+const deshabilitarBotonEliminarImagenes = computed(() => filesImages.value.length == 0)
+
 async function subirImagenes(idDocumento) {
   if (!filesImages.value || filesImages.value.length === 0) {
     $q.notify({
@@ -318,6 +328,10 @@ async function subirImagenes(idDocumento) {
       console.log(`Error al subir la imagen: ${file.name}`)
     }
   }
+}
+
+function eliminarUltimaImagen() {
+  filesImages.value.pop()
 }
 
 async function guardarAnuncio() {
