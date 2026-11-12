@@ -2,7 +2,7 @@
   <div class="row justify-center q-ma-xs">
     <h3>NUEVO ANUNCIO</h3>
   </div>
-  <q-form @submit="guardarAnuncio">
+  <q-form @validation-error="errorDeValidacion" @submit="guardarAnuncio">
     <div class="row q-ma-lg justify-center">
       <div class="col-12 col-md-6" style="border: 2px solid #2a7c13">
         <q-option-group
@@ -12,8 +12,9 @@
           class="q-ma-md"
           inline
         />
-        <q-input
+        <q-select
           v-model="marcaText"
+          :options="['Samsung', 'iPhone', 'Huawei', 'Nokia', 'Xiaomi']"
           outlined
           label="Marca"
           class="q-ma-lg"
@@ -32,23 +33,29 @@
           outlined
           label="Color"
           class="q-ma-lg"
-          :rules="[(val) => !!val || 'Debe llenar este campo']"
+          :rules="[
+            (val) => !!val || 'Debe llenar este campo',
+            (val) => /^[A-Za-z]+$/.test(val) || 'El campo debe estar compuesto por texto',
+          ]"
         />
         <q-input
           v-model.number="pantallaText"
           type="number"
           step="2"
-          min="0"
+          min="6"
           outlined
           label="Pantalla (Pulgadas)"
           class="q-ma-lg"
-          :rules="[(val) => !!val || 'Debe llenar este campo']"
+          :rules="[
+            (val) => !!val || 'Debe llenar este campo',
+            (val) => val >= 6 || 'EL valor es inválido',
+          ]"
         />
 
         <q-select
           outlined
           v-model="sistemaOperativo"
-          :options="opcionesSistemaOperativo"
+          :options="['Android', 'Windows', 'iOS']"
           label="Sistema"
           class="q-ma-lg"
           :rules="[(val) => !!val || 'Debe seleccionar un Sistema Operativo']"
@@ -60,10 +67,14 @@
               outlined
               v-model.number="gbRom"
               step="2"
+              min="8"
               type="number"
               class="q-ma-lg"
               label="ROM (GB)"
-              :rules="[(val) => !!val || 'Debe llenar este campo']"
+              :rules="[
+                (val) => !!val || 'Debe llenar este campo',
+                (val) => val >= 8 || 'EL valor es inválido',
+              ]"
             />
           </div>
           <div class="col text-grey-8 q-pr-lg">Almacenamiento interno</div>
@@ -73,10 +84,14 @@
           outlined
           v-model.number="gbRam"
           step="2"
+          min="2"
           type="number"
           class="q-ma-lg"
           label="RAM (GB)"
-          :rules="[(val) => !!val || 'Debe llenar este campo']"
+          :rules="[
+            (val) => !!val || 'Debe llenar este campo',
+            (val) => val >= 2 || 'EL valor es inválido',
+          ]"
         />
       </div>
 
@@ -95,14 +110,21 @@
               outlined
               label="Vendedor"
               class="q-ma-lg"
-              :rules="[(val) => !!val || 'Debe llenar este campo']"
+              :rules="[
+                (val) => !!val || 'Debe llenar este campo',
+                (val) => /^[A-Za-z]+$/.test(val) || 'El campo debe estar compuesto por texto',
+              ]"
             />
             <q-input
               v-model="telefonoText"
               outlined
               label="Teléfono"
               class="q-ma-lg"
-              :rules="[(val) => !!val || 'Debe llenar este campo']"
+              mask="####-####"
+              :rules="[
+                (val) => !!val || 'Debe llenar este campo',
+                (val) => /^[0-9]{4}-[0-9]{4}$/.test(val) || 'Formato inválido',
+              ]"
             />
 
             <div class="text-weight-bold q-ml-lg">DESCRIPCION</div>
@@ -123,7 +145,10 @@
                 prefix="$"
                 min="0"
                 step="0.50"
-                :rules="[(val) => !!val || 'Debe llenar este campo']"
+                :rules="[
+                  (val) => !!val || 'Debe llenar este campo',
+                  (val) => val > 0 || 'El precio debe ser positivo',
+                ]"
               />
             </div>
           </div>
@@ -235,7 +260,6 @@ const descripcionText = ref('')
 const precioText = ref(0.0)
 
 const sistemaOperativo = ref(null)
-const opcionesSistemaOperativo = ['Android', 'Windows', 'iOS']
 const gbRam = ref(0.0)
 const gbRom = ref(0.0)
 const estadoSeleccionado = ref('Nuevo')
@@ -345,14 +369,23 @@ async function guardarAnuncio() {
 
     $q.notify({
       type: 'positive',
-      message: 'Anuncio guardado con éxito',
       position: 'top',
+      message: 'Anuncio guardado con éxito',
     })
   } catch (e) {
     $q.notify({
       type: 'negative',
+      position: 'top',
       message: `Error al agregar el anuncio: ${e.message}`,
     })
   }
+}
+
+function errorDeValidacion() {
+  $q.notify({
+    type: 'negative',
+    position: 'top',
+    message: 'Debe llenar todos los campos',
+  })
 }
 </script>

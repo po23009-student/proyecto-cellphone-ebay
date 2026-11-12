@@ -19,7 +19,7 @@
         <q-btn icon="sym_o_add_ad" label="Nuevo Anuncio" to="/nuevoanuncio" class="gt-xs" />
         <q-btn icon="dataset" label="Estadisticas" to="/estadisticas" class="gt-xs" />
 
-        <q-btn round icon="add" color="positive" />
+        <q-btn round icon="add" color="positive" @click="enCarrito++" />
         <q-avatar
           square
           size="50px"
@@ -27,7 +27,9 @@
           color="primary"
           text-color="white"
           icon="shopping_cart"
-        />
+        >
+          <q-badge color="orange" style="top: 0.7px" rounded floating>{{ enCarrito }}</q-badge>
+        </q-avatar>
       </q-toolbar>
     </q-header>
 
@@ -43,7 +45,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view @articulo-comprado="actualizarCarrito()" />
     </q-page-container>
 
     <q-footer style="height: 40px">
@@ -58,8 +60,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 import EssentialLink from '@/components/EssentialLink.vue'
 
+const $q = useQuasar()
 const linksList = [
   {
     label: 'Inicio',
@@ -88,8 +92,19 @@ const linksList = [
 ]
 
 const leftDrawerOpen = ref(false)
+const enCarrito = ref(0)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+function actualizarCarrito() {
+  enCarrito.value++
+
+  $q.notify({
+    color: 'positive',
+    position: 'top',
+    message: 'Artículo agregado al carrito',
+  })
 }
 </script>

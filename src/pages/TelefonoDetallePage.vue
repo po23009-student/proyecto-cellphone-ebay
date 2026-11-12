@@ -39,7 +39,12 @@
             to="/ventacelulares"
             class="gt-sm"
           />
-          <q-btn style="background-color: #124d1c; color: white" label="Comprar" class="gt-sm" />
+          <q-btn
+            style="background-color: #124d1c; color: white"
+            @click="eventoArticuloComprado"
+            label="Comprar"
+            class="gt-sm"
+          />
         </div>
       </div>
 
@@ -78,12 +83,17 @@
       to="/ventacelulares"
       class="lt-md"
     />
-    <q-btn style="background-color: #124d1c; color: white" label="Comprar" class="lt-md" />
+    <q-btn
+      style="background-color: #124d1c; color: white"
+      label="Comprar"
+      @click="eventoArticuloComprado"
+      class="lt-md"
+    />
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, defineEmits } from 'vue'
 import { useRoute } from 'vue-router'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
@@ -96,6 +106,8 @@ const datosDocumento = ref({})
 const imagenessrc = ref([])
 const documentoAttach = ref({})
 const imagenesLocales = ref([])
+
+const emit = defineEmits(['articuloComprado'])
 
 onMounted(() => {
   obtenerDocumento(ruta.params.cid)
@@ -133,5 +145,9 @@ async function obtenerImagenes(idDocumento) {
       imagenesLocales.value.push(URL.createObjectURL(blob))
     }
   }
+}
+
+function eventoArticuloComprado() {
+  emit('articuloComprado')
 }
 </script>
