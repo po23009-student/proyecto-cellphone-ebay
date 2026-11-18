@@ -45,7 +45,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view @articulo-comprado="actualizarCarrito()" />
+      <router-view @articulo-comprado="actualizarCarrito()" :productosEnCarrito="enCarrito" />
     </q-page-container>
 
     <q-footer style="height: 40px">

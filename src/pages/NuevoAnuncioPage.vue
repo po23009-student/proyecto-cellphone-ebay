@@ -18,7 +18,7 @@
           outlined
           label="Marca"
           class="q-ma-lg"
-          :rules="[(val) => !!val || 'Debe llenar este campo']"
+          :rules="[(val) => !!val || 'Debe seleccionar una marca']"
         />
         <q-input
           v-model="modeloTelText"
@@ -112,7 +112,7 @@
               class="q-ma-lg"
               :rules="[
                 (val) => !!val || 'Debe llenar este campo',
-                (val) => /^[A-Za-z]+$/.test(val) || 'El campo debe estar compuesto por texto',
+                (val) => /^[A-Za-z\s]+$/.test(val) || 'El campo debe estar compuesto por texto',
               ]"
             />
             <q-input
@@ -133,6 +133,9 @@
               type="textarea"
               outlined
               class="q-ma-lg"
+              llenar
+              este
+              campo
               :rules="[(val) => !!val || 'Debe llenar este campo']"
             />
 
@@ -147,7 +150,7 @@
                 step="0.50"
                 :rules="[
                   (val) => !!val || 'Debe llenar este campo',
-                  (val) => val > 0 || 'El precio debe ser positivo',
+                  (val) => val > 0 || 'El precio debe ser mayor que cero',
                 ]"
               />
             </div>
@@ -244,6 +247,7 @@
 <script setup>
 import { useQuasar } from 'quasar'
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { collection, doc, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 import { api } from '@/boot/axios'
@@ -276,6 +280,7 @@ const opcionesEstado = [
 
 const filesImages = ref([])
 const slide = ref(1)
+const router = useRouter()
 
 const anuncio = ref({
   titulo_anuncio: tituloText,
@@ -372,6 +377,8 @@ async function guardarAnuncio() {
       position: 'top',
       message: 'Anuncio guardado con éxito',
     })
+
+    router.push('/ventacelulares')
   } catch (e) {
     $q.notify({
       type: 'negative',
