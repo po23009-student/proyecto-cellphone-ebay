@@ -14,8 +14,23 @@
 
         <q-icon name="campaign" size="lg" class="gt-xs" />
         <q-toolbar-title class="gt-xs"> Tienda CellPhone </q-toolbar-title>
+
+        <q-input
+          v-model="textoBusqueda"
+          filled
+          bg-color="white"
+          v-if="route.path === '/'"
+          dense
+          label="Buscar"
+          class="q-ma-md"
+          style="width: 250px"
+        >
+          <template #append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+
         <q-btn icon="home" label="Inicio" to="/" class="gt-xs" />
-        <q-btn icon="shopping_bag" label="Ventas" to="/ventacelulares" class="gt-xs" />
         <q-btn icon="sym_o_add_ad" label="Nuevo Anuncio" to="/nuevoanuncio" class="gt-xs" />
         <q-btn icon="dataset" label="Estadisticas" to="/estadisticas" class="gt-xs" />
 
@@ -45,7 +60,11 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view @articulo-comprado="actualizarCarrito()" :productosEnCarrito="enCarrito" />
+      <router-view
+        @articulo-comprado="actualizarCarrito()"
+        :productosEnCarrito="enCarrito"
+        :textoBusqueda="textoBusqueda"
+      />
     </q-page-container>
 
     <q-footer style="height: 40px">
@@ -61,21 +80,18 @@
 <script setup>
 import { ref } from 'vue'
 import { useQuasar } from 'quasar'
+import { useRoute } from 'vue-router'
 import EssentialLink from '@/components/EssentialLink.vue'
 
 const $q = useQuasar()
+const route = useRoute()
+
 const linksList = [
   {
     label: 'Inicio',
     caption: '',
     icon: 'home',
     link: '/',
-  },
-  {
-    label: 'Ventas',
-    caption: '',
-    icon: 'shopping_bag',
-    link: 'ventacelulares',
   },
   {
     label: 'Nuevo Anuncio',
@@ -93,6 +109,8 @@ const linksList = [
 
 const leftDrawerOpen = ref(false)
 const enCarrito = ref(0)
+
+const textoBusqueda = ref('')
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value

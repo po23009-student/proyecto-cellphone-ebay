@@ -6,7 +6,7 @@
     @update:model-value="eventoToogleNuevo"
     label="Nuevo"
   />
-
+  <p class="q-mx-md"><strong>Marca</strong></p>
   <q-option-group
     v-model="listaSeleccionadosMarca"
     :options="listaOpcionesMarca"
@@ -17,6 +17,7 @@
     style="border: 2px solid green"
   />
 
+  <p class="q-mx-md"><strong>Sistema</strong></p>
   <q-option-group
     v-model="listaSeleccionadosSistema"
     :options="listaOpcionesSistema"
@@ -27,6 +28,7 @@
     class="q-ma-md"
   />
 
+  <p class="q-mx-md"><strong>Pantalla</strong></p>
   <q-option-group
     v-model="listaSeleccionadosPantalla"
     :options="listaOpcionesPantalla"

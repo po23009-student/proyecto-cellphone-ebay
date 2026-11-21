@@ -36,14 +36,14 @@
           <q-btn
             style="background-color: #124d1c; color: white"
             label="Inicio"
-            to="/ventacelulares"
-            class="gt-sm"
+            to="/"
+            class="gt-sm q-ma-sm"
           />
           <q-btn
             style="background-color: #124d1c; color: white"
             @click="eventoArticuloComprado"
             label="Comprar"
-            class="gt-sm"
+            class="gt-sm q-ma-sm"
           />
         </div>
       </div>
@@ -51,8 +51,9 @@
       <div class="row q-ma-md">
         <div class="col-12 col-md-6">
           <div style="border: 2px solid green">
-            <span style="margin: 2px">Vendedor: {{ datosDocumento.vendedor }}</span>
-            <span style="margin: 2px">Telefono: {{ datosDocumento.telefono_vendedor }}</span>
+            <span>Vendedor: {{ datosDocumento.vendedor }}</span>
+            <br />
+            <span>Telefono: {{ datosDocumento.telefono_vendedor }}</span>
           </div>
         </div>
       </div>
@@ -61,7 +62,7 @@
   <div class="row justify-center gt-sm">
     <h5>DESCRIPCIÓN</h5>
   </div>
-  <div class="row justify-center">
+  <div class="row justify-center" style="padding-bottom: 75px">
     <div class="col-12 col-md-3 q-mx-md" style="border: 2px solid green">
       <p><strong>Estado:</strong> {{ datosDocumento.estado_telefono }}</p>
       <p><strong>Marca:</strong> {{ datosDocumento.marca_telefono }}</p>
@@ -76,13 +77,9 @@
     </div>
   </div>
 
-  <div class="row justify-center q-ma-md q-gutter-sm">
-    <q-btn
-      style="background-color: #124d1c; color: white"
-      label="Inicio"
-      to="/ventacelulares"
-      class="lt-md"
-    />
+  <div class="botones-flotantes">
+    <q-btn style="background-color: #124d1c; color: white" label="Inicio" to="/" class="lt-md" />
+
     <q-btn
       style="background-color: #124d1c; color: white"
       label="Comprar"
@@ -151,3 +148,19 @@ function eventoArticuloComprado() {
   emit('articuloComprado')
 }
 </script>
+
+<style scoped>
+.botones-flotantes {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+
+  z-index: 9999;
+  padding-top: 520px;
+}
+</style>

@@ -46,10 +46,7 @@
           outlined
           label="Pantalla (Pulgadas)"
           class="q-ma-lg"
-          :rules="[
-            (val) => !!val || 'Debe llenar este campo',
-            (val) => val >= 6 || 'EL valor es inválido',
-          ]"
+          :rules="[(val) => !!val || 'Debe llenar este campo']"
         />
 
         <q-select
@@ -71,10 +68,7 @@
               type="number"
               class="q-ma-lg"
               label="ROM (GB)"
-              :rules="[
-                (val) => !!val || 'Debe llenar este campo',
-                (val) => val >= 8 || 'EL valor es inválido',
-              ]"
+              :rules="[(val) => !!val || 'Debe llenar este campo']"
             />
           </div>
           <div class="col text-grey-8 q-pr-lg">Almacenamiento interno</div>
@@ -88,10 +82,7 @@
           type="number"
           class="q-ma-lg"
           label="RAM (GB)"
-          :rules="[
-            (val) => !!val || 'Debe llenar este campo',
-            (val) => val >= 2 || 'EL valor es inválido',
-          ]"
+          :rules="[(val) => !!val || 'Debe llenar este campo']"
         />
       </div>
 
@@ -162,15 +153,23 @@
               text-color="white"
               icon="cancel"
               label="Cancelar"
-              to="/ventacelulares"
+              to="/"
+              class="gt-xs"
             />
-            <q-btn color="black" text-color="white" type="submit" icon="save" label="Crear" />
+            <q-btn
+              color="black"
+              text-color="white"
+              type="submit"
+              icon="save"
+              label="Crear"
+              class="gt-xs"
+            />
           </div>
         </div>
       </div>
     </div>
 
-    <div class="row q-mx-lg q-mb-lg">
+    <div class="row q-mx-lg q-mb-lg" style="padding-bottom: 75px">
       <div style="border: 3px solid #2a7c13" class="col-12 col-md-6">
         <h6 class="q-ma-md q-mt-none">Imágenes</h6>
 
@@ -210,7 +209,7 @@
               <tbody>
                 <tr v-for="(imagen, index) in filesImages" :key="imagen" :name="index">
                   <td>{{ index + 1 }}</td>
-                  <td>{{ (imagen.size / 1024).toFixed(2) }} MB</td>
+                  <td>{{ (imagen.size / (1024 * 1024)).toFixed(2) }} MB</td>
                   <td>{{ imagen.type }}</td>
                 </tr>
               </tbody>
@@ -238,6 +237,26 @@
               </q-carousel-slide>
             </q-carousel>
           </div>
+        </div>
+        <div class="botones-flotantes">
+          <q-btn
+            style="background-color: #124d1c; color: white"
+            label="Cancelar"
+            color="black"
+            text-color="white"
+            icon="cancel"
+            to="/"
+            class="lt-sm"
+          />
+          <q-btn
+            style="background-color: #124d1c; color: white"
+            color="black"
+            text-color="white"
+            type="submit"
+            icon="save"
+            label="Crear Anuncio"
+            class="lt-sm"
+          />
         </div>
       </div>
     </div>
@@ -396,3 +415,19 @@ function errorDeValidacion() {
   })
 }
 </script>
+
+<style scoped>
+.botones-flotantes {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+
+  z-index: 9999;
+  padding-top: 520px;
+}
+</style>

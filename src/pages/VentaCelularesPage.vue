@@ -128,12 +128,16 @@
 <script setup>
 import PhoneCard from '@/components/PhoneCard.vue'
 import MenuFiltro from '@/components/MenuFiltro.vue'
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, defineProps } from 'vue'
 import { useQuasar } from 'quasar'
 import { collection, query, getDocs } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 
 const $q = useQuasar()
+
+const props = defineProps({
+  textoBusqueda: String,
+})
 
 const cargando = ref(true)
 const filtrarPorNuevo = ref(false)
@@ -163,6 +167,21 @@ watch(articulosPorPagina, () => {
 
 const anunciosFiltrados = computed(() => {
   let listaAnunciosFiltrados = listaAnuncios.value
+    .filter((anuncio) => {
+      let textoBusquedaRecibido = props.textoBusqueda || 'vacio'
+
+      if (textoBusquedaRecibido === 'vacio') {
+        return true
+      }
+
+      return (
+        anuncio.titulo_anuncio.toLowerCase().includes(textoBusquedaRecibido.toLowerCase()) ||
+        anuncio.descripcion_anuncio.toLowerCase().includes(textoBusquedaRecibido.toLowerCase()) ||
+        anuncio.color_telefono.toLowerCase().includes(textoBusquedaRecibido.toLowerCase()) ||
+        anuncio.marca_telefono.toLowerCase().includes(textoBusquedaRecibido.toLowerCase()) ||
+        anuncio.modelo_telefono.toLowerCase().includes(textoBusquedaRecibido.toLowerCase())
+      )
+    })
     .filter(
       (anuncio) =>
         anuncio.precio_telefono >= precioInicial.value &&
