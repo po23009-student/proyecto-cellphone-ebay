@@ -14,9 +14,7 @@
       <div class="col-12 col-md-3">
         <q-card class="my-card bg-secondary text-white">
           <q-card-section>
-            <q-icon name="window" size="3rem" />
-            <q-icon name="apple" size="4rem" />
-            <q-icon name="android" size="4rem" />
+            <q-icon name="storefront" size="4rem" />
             <div class="text-h6">Marcas</div>
             <div class="text-subtitle2">{{ listaMarcas.length }}</div>
           </q-card-section>
@@ -73,6 +71,15 @@
         />
       </div>
     </div>
+    <div class="row q-ma-md q-pa-md">
+      <div class="col-12 col-md-8">
+        <GraficaPastel
+          :lista-elementos="['Android', 'Windows', 'iOS']"
+          :porcentajes="[40, 30, 20]"
+          texto-titulo="Porcentaje de Productos por Sistema Operativo"
+        />
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -83,6 +90,7 @@ import { getDocs, collection } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 import GraficaLinea from '@/components/GraficaLinea.vue'
 import GraficaBarras from '@/components/GraficaBarras.vue'
+import GraficaPastel from '@/components/GraficaPastel.vue'
 
 const $q = useQuasar()
 const listaAnuncios = ref([])
