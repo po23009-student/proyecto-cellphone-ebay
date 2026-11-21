@@ -87,7 +87,7 @@
           <h3 v-if="cargando == false && anunciosFiltrados.length == 0">No hay artículos</h3>
 
           <PhoneCard
-            v-for="(anuncio, key) in anunciosFiltrados"
+            v-for="(anuncio, key) in anunciosPaginados"
             :key="key"
             :idAnuncio="anuncio.id"
             :precioTelefono="anuncio.precio_telefono"
@@ -130,7 +130,7 @@ import PhoneCard from '@/components/PhoneCard.vue'
 import MenuFiltro from '@/components/MenuFiltro.vue'
 import { ref, onMounted, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
-import { collection, query, getDocs, limit, startAfter } from 'firebase/firestore'
+import { collection, query, getDocs } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 
 const $q = useQuasar()
@@ -148,14 +148,12 @@ const ultimaPagina = ref(5)
 const listaOpcionesSeleccionadasMarca = ref([])
 const listaOpcionesSeleccionadasPantalla = ref([])
 const listaOpcionesSeleccionadasSistema = ref([])
-const anunciosPaginados = ref([])
 const listaAnuncios = ref([])
+const anunciosPaginados = ref([])
 const anunciosDocs = ref([])
-const primerDocumentoMostrado = ref(null)
-const ultimoDocumentoMostrado = ref(null)
 
-watch(paginaActual, async (newValue) => {
-  listaAnuncios.value = anunciosPaginados.value.at(newValue - 1)
+watch(paginaActual, () => {
+  paginarAnuncios()
   determinarRangoPrecios()
 })
 
@@ -209,6 +207,10 @@ const anunciosFiltrados = computed(() => {
   return listaAnunciosFiltrados
 })
 
+watch(anunciosFiltrados, () => {
+  paginarAnuncios()
+})
+
 onMounted(() => {
   obtenerTodosDocumentos()
 })
@@ -241,44 +243,32 @@ function ordenarPorFecha() {
   }
 }
 
+function paginarAnuncios() {
+  anunciosPaginados.value = anunciosFiltrados.value.slice(
+    articulosPorPagina.value * paginaActual.value - articulosPorPagina.value,
+    articulosPorPagina.value * paginaActual.value,
+  )
+
+  ultimaPagina.value = anunciosFiltrados.value.length / articulosPorPagina.value
+
+  if (anunciosFiltrados.value.length % articulosPorPagina.value > 0) {
+    ultimaPagina.value++
+  }
+}
+
 async function obtenerTodosDocumentos() {
   try {
     cargando.value = true
-    anunciosPaginados.value = []
-    primerDocumentoMostrado.value = null
-    ultimoDocumentoMostrado.value = null
+    listaAnuncios.value = []
+    anunciosDocs.value = []
 
-    do {
-      listaAnuncios.value = []
-      anunciosDocs.value = []
+    anunciosDocs.value = await getDocs(query(collection(db, 'anuncios')))
 
-      if (!primerDocumentoMostrado.value && !ultimoDocumentoMostrado.value) {
-        anunciosDocs.value = await getDocs(
-          query(collection(db, 'anuncios'), limit(articulosPorPagina.value)),
-        )
-      } else {
-        anunciosDocs.value = await getDocs(
-          query(
-            collection(db, 'anuncios'),
-            startAfter(ultimoDocumentoMostrado.value),
-            limit(articulosPorPagina.value),
-          ),
-        )
-      }
+    anunciosDocs.value.forEach((doc) => {
+      listaAnuncios.value.push({ id: doc.id, ...doc.data() })
+    })
 
-      primerDocumentoMostrado.value = anunciosDocs.value.docs.at(0)
-      ultimoDocumentoMostrado.value = anunciosDocs.value.docs.at(-1)
-
-      anunciosDocs.value.forEach((doc) => {
-        listaAnuncios.value.push({ id: doc.id, ...doc.data() })
-      })
-
-      anunciosPaginados.value.push(listaAnuncios.value)
-    } while (listaAnuncios.value.length == articulosPorPagina.value)
-
-    ultimaPagina.value = anunciosPaginados.value.length
-    listaAnuncios.value = anunciosPaginados.value.at(0)
-
+    paginarAnuncios()
     determinarRangoPrecios()
 
     cargando.value = false
