@@ -35,7 +35,7 @@
           class="q-ma-lg"
           :rules="[
             (val) => !!val || 'Debe llenar este campo',
-            (val) => /^[A-Za-z]+$/.test(val) || 'El campo debe estar compuesto por texto',
+            (val) => /^[A-Za-z\s]+$/.test(val) || 'El campo debe estar compuesto por texto',
           ]"
         />
         <q-input
@@ -183,7 +183,9 @@
                   append
                   accept=".jpg, image/*"
                   style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer"
-                  :rules="[(val) => !!val || 'Debe seleccionar una imagen']"
+                  :rules="[
+                    (val) => (val && val.length > 0) || 'Debe seleccionar al menos una imagen',
+                  ]"
                 />
               </q-btn>
               <q-btn
@@ -397,7 +399,7 @@ async function guardarAnuncio() {
       message: 'Anuncio guardado con éxito',
     })
 
-    router.push('/ventacelulares')
+    router.push('/')
   } catch (e) {
     $q.notify({
       type: 'negative',
