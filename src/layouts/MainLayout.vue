@@ -105,13 +105,13 @@ const linksList = [
     label: 'Nuevo Anuncio',
     caption: '',
     icon: 'sym_o_add_ad',
-    link: 'nuevoanuncio',
+    link: '/nuevoanuncio',
   },
   {
     label: 'Estadísticas',
     caption: '',
     icon: 'dataset',
-    link: 'estadisticas',
+    link: '/estadisticas',
   },
 ]
 

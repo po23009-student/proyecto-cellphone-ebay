@@ -3,12 +3,12 @@
     <h3>NUEVO ANUNCIO</h3>
   </div>
   <q-form @validation-error="errorDeValidacion" @submit="guardarAnuncio">
-    <div class="row q-mx-lg q-mb-lg lt-md" style="padding-bottom: 75px">
+    <div class="row q-mx-lg q-mb-lg lt-md">
       <div class="col-12 col-md-7" style="border: 3px solid #2a7c13; min-width: 0">
         <h6 class="q-ma-md q-mt-none">Imágenes</h6>
 
         <div class="column q-pa-md q-gutter-md">
-          <div class="carrusel-telefono">
+          <div>
             <div class="botones-carrusel-telefono">
               <q-btn round color="primary" icon="add">
                 <q-tooltip style="font-size: 14px"> Agregar Imagen </q-tooltip>
@@ -78,8 +78,152 @@
       </div>
     </div>
 
+    <div class="col-12 col-md-6 lt-md">
+      <div class="row justify-center">
+        <div class="col-12">
+          <q-input
+            v-model="tituloText"
+            outlined
+            label="Titulo del Anuncio"
+            class="q-ma-lg"
+            :rules="[(val) => !!val || 'Debe llenar este campo']"
+          />
+
+          <div style="border: 3px solid #2a7c13; margin-bottom: 35px" class="q-ma-lg q-pa-md">
+            <div class="text-weight-bold q-mb-sm">PRECIO</div>
+            <q-input
+              type="number"
+              v-model.number="precioText"
+              outlined
+              prefix="$"
+              min="0"
+              step="0.1"
+              :rules="[
+                (val) => !!val || 'Debe llenar este campo',
+                (val) => val > 0 || 'El precio debe ser mayor que cero',
+              ]"
+            />
+          </div>
+          <q-input
+            v-model="vendedorText"
+            outlined
+            label="Vendedor"
+            class="q-ma-lg"
+            :rules="[
+              (val) => !!val || 'Debe llenar este campo',
+              (val) => /^[A-Za-z\s]+$/.test(val) || 'El campo debe estar compuesto por texto',
+            ]"
+          />
+          <q-input
+            v-model="telefonoText"
+            outlined
+            label="Teléfono"
+            class="q-ma-lg"
+            mask="####-####"
+            :rules="[
+              (val) => !!val || 'Debe llenar este campo',
+              (val) => /^[0-9]{4}-[0-9]{4}$/.test(val) || 'Formato inválido',
+            ]"
+          />
+
+          <div class="col-12 col-md-6" style="border: 2px solid #2a7c13">
+            <q-option-group
+              v-model="estadoSeleccionado"
+              :options="opcionesEstado"
+              color="primary"
+              class="q-ma-md"
+              inline
+            />
+            <q-select
+              v-model="marcaText"
+              :options="['Samsung', 'iPhone', 'Huawei', 'Nokia', 'Xiaomi']"
+              use-input
+              use-chips
+              new-value-mode="add-unique"
+              outlined
+              label="Marca"
+              class="q-ma-lg"
+              :rules="[(val) => !!val || 'Debe seleccionar una marca']"
+            />
+            <q-input
+              v-model="modeloTelText"
+              outlined
+              label="Modelo"
+              class="q-ma-lg"
+              :rules="[(val) => !!val || 'Debe llenar este campo']"
+            />
+
+            <q-input
+              v-model="colorTelText"
+              outlined
+              label="Color"
+              class="q-ma-lg"
+              :rules="[
+                (val) => !!val || 'Debe llenar este campo',
+                (val) => /^[A-Za-z\s]+$/.test(val) || 'El campo debe estar compuesto por texto',
+              ]"
+            />
+            <q-input
+              v-model.number="pantallaText"
+              type="number"
+              step="0.1"
+              min="6"
+              outlined
+              label="Pantalla (Pulgadas)"
+              class="q-ma-lg"
+              :rules="[(val) => !!val || 'Debe llenar este campo']"
+            />
+
+            <q-select
+              outlined
+              v-model="sistemaOperativo"
+              :options="['Android', 'Windows', 'iOS']"
+              label="Sistema"
+              class="q-ma-lg"
+              :rules="[(val) => !!val || 'Debe seleccionar un Sistema Operativo']"
+            />
+
+            <div class="row items-center">
+              <div class="col">
+                <q-input
+                  outlined
+                  v-model.number="gbRom"
+                  step="1"
+                  min="8"
+                  type="number"
+                  class="q-ma-lg"
+                  label="ROM (GB)"
+                  :rules="[(val) => !!val || 'Debe llenar este campo']"
+                />
+              </div>
+              <div class="col text-grey-8 q-pr-lg">Almacenamiento interno</div>
+            </div>
+
+            <q-input
+              outlined
+              v-model.number="gbRam"
+              step="1"
+              min="2"
+              type="number"
+              class="q-ma-lg"
+              label="RAM (GB)"
+              :rules="[(val) => !!val || 'Debe llenar este campo']"
+            />
+          </div>
+          <div class="text-weight-bold q-ml-lg">DESCRIPCION</div>
+          <q-input
+            v-model="descripcionText"
+            type="textarea"
+            outlined
+            class="q-ma-lg"
+            :rules="[(val) => !!val || 'Debe llenar este campo']"
+          />
+        </div>
+      </div>
+    </div>
+
     <div class="row q-ma-lg justify-center">
-      <div class="col-12 col-md-6" style="border: 2px solid #2a7c13">
+      <div class="col-12 col-md-6 gt-sm" style="border: 2px solid #2a7c13">
         <q-option-group
           v-model="estadoSeleccionado"
           :options="opcionesEstado"
@@ -164,7 +308,7 @@
         />
       </div>
 
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-6 gt-sm">
         <div class="row justify-center">
           <div class="col-12">
             <q-input
@@ -205,7 +349,7 @@
               :rules="[(val) => !!val || 'Debe llenar este campo']"
             />
 
-            <div style="border: 3px solid #2a7c13" class="q-ma-lg q-pa-md">
+            <div style="border: 3px solid #2a7c13; margin-bottom: 35px" class="q-ma-lg q-pa-md">
               <div class="text-weight-bold q-mb-sm">PRECIO</div>
               <q-input
                 type="number"
@@ -221,7 +365,6 @@
               />
             </div>
           </div>
-
           <div class="row justify-center q-gutter-md">
             <q-btn
               color="black"
@@ -244,7 +387,7 @@
       </div>
     </div>
 
-    <div class="row q-mx-lg q-mb-lg gt-sm" style="padding-bottom: 75px">
+    <div class="row q-mx-lg q-mb-lg gt-sm" style="padding-bottom: 100px">
       <div class="col-12 col-md-7" style="border: 3px solid #2a7c13; min-width: 0">
         <h6 class="q-ma-md q-mt-none">Imágenes</h6>
 
@@ -331,8 +474,7 @@
         </div>
       </div>
     </div>
-
-    <div class="botones-flotantes">
+    <div class="botones-inferiores-telefono">
       <q-btn
         style="background-color: #124d1c; color: white"
         label="Cancelar"
@@ -510,22 +652,14 @@ function errorDeValidacion() {
 </script>
 
 <style scoped>
-.botones-flotantes {
+.botones-inferiores-telefono {
   position: fixed;
+  left: 25%;
   bottom: 50px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 110px;
   display: flex;
-  flex-direction: row;
-  gap: 12px;
+  gap: 10px;
   z-index: 9999;
-  padding-top: 520px;
-}
-
-.carousel-telefono {
-  position: relative;
-  width: 100%;
-  height: 300px;
 }
 
 .botones-carrusel-telefono {
@@ -534,6 +668,7 @@ function errorDeValidacion() {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
+
   display: flex;
   flex-direction: row;
   gap: 12px;
