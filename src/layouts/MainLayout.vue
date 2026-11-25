@@ -45,6 +45,14 @@
         >
           <q-badge color="orange" style="top: 0.7px" rounded floating>{{ enCarrito }}</q-badge>
         </q-avatar>
+
+        <q-btn
+          round
+          class="q-ml-sm"
+          color="accent"
+          :icon="Dark.isActive ? 'brightness_7' : 'dark_mode'"
+          @click="Dark.toggle()"
+        />
       </q-toolbar>
     </q-header>
 
@@ -79,7 +87,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useQuasar } from 'quasar'
+import { Dark, useQuasar } from 'quasar'
 import { useRoute } from 'vue-router'
 import EssentialLink from '@/components/EssentialLink.vue'
 
