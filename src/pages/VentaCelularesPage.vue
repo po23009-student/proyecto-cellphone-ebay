@@ -2,12 +2,16 @@
   <q-page class="q-pa-md">
     <div class="row q-col-gutter-lg">
       <div class="col-md-2 gt-sm">
-        <MenuFiltro
-          @toogle-nuevo="eventoFiltrarPorNuevo"
-          @marca-seleccionada="eventoFiltrarPorMarca"
-          @sistema-seleccionado="eventoFiltrarPorSistema"
-          @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
-        />
+        <div v-if="cargando == false">
+          <MenuFiltro
+            @toogle-nuevo="eventoFiltrarPorNuevo"
+            @marca-seleccionada="eventoFiltrarPorMarca"
+            @sistema-seleccionado="eventoFiltrarPorSistema"
+            @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
+            :lista-marcas="listaMarcas"
+            :lista-pantallas="listaPantallas"
+          />
+        </div>
       </div>
       <div class="col-12 col-md-10">
         <q-card flat bordered class="q-mb-lg">
@@ -57,18 +61,22 @@
                 @click="ordenarPorFecha"
               />
 
-              <q-btn flat round color="secondary" icon="filter_alt" class="lt-md">
-                <q-menu>
-                  <div style="width: 250px">
-                    <MenuFiltro
-                      @toogle-nuevo="eventoFiltrarPorNuevo"
-                      @marca-seleccionada="eventoFiltrarPorMarca"
-                      @sistema-seleccionado="eventoFiltrarPorSistema"
-                      @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
-                    />
-                  </div>
-                </q-menu>
-              </q-btn>
+              <div v-if="cargando == false">
+                <q-btn flat round color="secondary" icon="filter_alt" class="lt-md">
+                  <q-menu>
+                    <div style="width: 250px">
+                      <MenuFiltro
+                        @toogle-nuevo="eventoFiltrarPorNuevo"
+                        @marca-seleccionada="eventoFiltrarPorMarca"
+                        @sistema-seleccionado="eventoFiltrarPorSistema"
+                        @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
+                        :lista-marcas="listaMarcas"
+                        :lista-pantallas="listaPantallas"
+                      />
+                    </div>
+                  </q-menu>
+                </q-btn>
+              </div>
             </div>
           </q-card-section>
         </q-card>
@@ -77,6 +85,7 @@
           <q-circular-progress
             indeterminate
             size="100px"
+            style="height: 175px"
             :thickness="0.7"
             color="secondary"
             center-color="dark"
@@ -149,6 +158,8 @@ const articulosPorPagina = ref(5)
 const paginaActual = ref(1)
 const ultimaPagina = ref(5)
 
+const listaMarcas = ref([])
+const listaPantallas = ref([])
 const listaOpcionesSeleccionadasMarca = ref([])
 const listaOpcionesSeleccionadasPantalla = ref([])
 const listaOpcionesSeleccionadasSistema = ref([])
@@ -230,8 +241,10 @@ watch(anunciosFiltrados, () => {
   paginarAnuncios()
 })
 
-onMounted(() => {
-  obtenerTodosDocumentos()
+onMounted(async () => {
+  await obtenerTodosDocumentos()
+  cargarPantallasParaMenu()
+  cargarMarcasParaMenu()
 })
 
 function determinarRangoPrecios() {
@@ -297,6 +310,22 @@ async function obtenerTodosDocumentos() {
       message: `Error al obtener los anuncios: ${e.message}`,
     })
   }
+}
+
+function cargarMarcasParaMenu() {
+  anunciosFiltrados.value.forEach((anuncio) => {
+    if (!listaMarcas.value.includes(anuncio.marca_telefono)) {
+      listaMarcas.value.push(anuncio.marca_telefono)
+    }
+  })
+}
+
+function cargarPantallasParaMenu() {
+  anunciosFiltrados.value.forEach((anuncio) => {
+    if (!listaPantallas.value.includes(anuncio.pantalla_pulgadas_telefono.toString())) {
+      listaPantallas.value.push(anuncio.pantalla_pulgadas_telefono.toString())
+    }
+  })
 }
 
 function eventoFiltrarPorNuevo(event) {

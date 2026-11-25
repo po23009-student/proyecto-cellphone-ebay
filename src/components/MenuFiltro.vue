@@ -41,36 +41,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { defineProps } from 'vue'
+
+const props = defineProps({
+  listaMarcas: Array,
+  listaPantallas: Array,
+})
 
 const nuevoToggle = ref(false)
 
 const listaSeleccionadosMarca = ref([])
 const listaSeleccionadosSistema = ref([])
 const listaSeleccionadosPantalla = ref([])
-
-const listaOpcionesMarca = [
-  {
-    label: 'Samsung',
-    value: 'Samsung',
-  },
-  {
-    label: 'Huawei',
-    value: 'Huawei',
-  },
-  {
-    label: 'Nokia',
-    value: 'Nokia',
-  },
-  {
-    label: 'iPhone',
-    value: 'iPhone',
-  },
-  {
-    label: 'Xiaomi',
-    value: 'Xiaomi',
-  },
-]
 
 const listaOpcionesSistema = [
   {
@@ -87,27 +70,26 @@ const listaOpcionesSistema = [
   },
 ]
 
-const listaOpcionesPantalla = [
-  {
-    label: '6.0',
-    value: '6.0',
-  },
-  {
-    label: '5.5',
-    value: '5.5',
-  },
-  {
-    label: '5',
-    value: '5',
-  },
-]
-
 const emit = defineEmits([
   'toogleNuevo',
   'marcaSeleccionada',
   'sistemaSeleccionado',
   'pantallaSeleccionada',
 ])
+
+const listaOpcionesMarca = computed(() =>
+  props.listaMarcas.map((marca) => ({
+    label: marca,
+    value: marca,
+  })),
+)
+
+const listaOpcionesPantalla = computed(() =>
+  props.listaPantallas.map((pulgadas) => ({
+    label: pulgadas,
+    value: pulgadas,
+  })),
+)
 
 function eventoToogleNuevo() {
   emit('toogleNuevo', { valorNuevo: nuevoToggle.value })

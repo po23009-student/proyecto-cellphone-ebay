@@ -3,6 +3,81 @@
     <h3>NUEVO ANUNCIO</h3>
   </div>
   <q-form @validation-error="errorDeValidacion" @submit="guardarAnuncio">
+    <div class="row q-mx-lg q-mb-lg lt-md" style="padding-bottom: 75px">
+      <div class="col-12 col-md-7" style="border: 3px solid #2a7c13; min-width: 0">
+        <h6 class="q-ma-md q-mt-none">Imágenes</h6>
+
+        <div class="column q-pa-md q-gutter-md">
+          <div class="carrusel-telefono">
+            <div class="botones-carrusel-telefono">
+              <q-btn round color="primary" icon="add">
+                <q-tooltip style="font-size: 14px"> Agregar Imagen </q-tooltip>
+                <q-file
+                  v-model="filesImages"
+                  multiple
+                  append
+                  accept=".jpg, image/*"
+                  style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer"
+                />
+              </q-btn>
+
+              <q-btn
+                round
+                :disable="deshabilitarBotonEliminarImagenes"
+                @click="eliminarImagenActual"
+                color="primary"
+                icon="remove"
+                title="Eliminar imagen"
+              >
+                <q-tooltip style="font-size: 14px"> Eliminar Imagen </q-tooltip>
+              </q-btn>
+            </div>
+            <q-carousel
+              v-model="slide"
+              animated
+              arrows
+              navigation
+              infinite
+              control-type="regular"
+              control-color="primary"
+              style="width: 100%; height: 300px"
+            >
+              <q-carousel-slide
+                v-for="(imagen, index) in imagenesURL"
+                :key="imagen"
+                :name="index + 1"
+                class="flex flex-center"
+              >
+                <q-img :src="imagen" fit="contain" style="width: 100%; height: 100%" />
+              </q-carousel-slide>
+            </q-carousel>
+          </div>
+
+          <div style="width: 100%; max-height: 180px; overflow-y: auto; overflow-x: auto">
+            <table style="width: 100%; table-layout: fixed; text-align: left; border-spacing: 0">
+              <thead>
+                <tr class="text-weight-bold">
+                  <th style="width: 15%">N</th>
+                  <th style="width: 35%">Tamaño</th>
+                  <th style="width: 50%">Tipo</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr v-for="(imagen, index) in filesImages" :key="imagen.name + index">
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ (imagen.size / (1024 * 1024)).toFixed(4) }} MB</td>
+                  <td style="overflow-wrap: anywhere">
+                    {{ imagen.type }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row q-ma-lg justify-center">
       <div class="col-12 col-md-6" style="border: 2px solid #2a7c13">
         <q-option-group
@@ -15,6 +90,9 @@
         <q-select
           v-model="marcaText"
           :options="['Samsung', 'iPhone', 'Huawei', 'Nokia', 'Xiaomi']"
+          use-input
+          use-chips
+          new-value-mode="add-unique"
           outlined
           label="Marca"
           class="q-ma-lg"
@@ -41,7 +119,7 @@
         <q-input
           v-model.number="pantallaText"
           type="number"
-          step="2"
+          step="0.1"
           min="6"
           outlined
           label="Pantalla (Pulgadas)"
@@ -63,7 +141,7 @@
             <q-input
               outlined
               v-model.number="gbRom"
-              step="2"
+              step="1"
               min="8"
               type="number"
               class="q-ma-lg"
@@ -77,7 +155,7 @@
         <q-input
           outlined
           v-model.number="gbRam"
-          step="2"
+          step="1"
           min="2"
           type="number"
           class="q-ma-lg"
@@ -124,9 +202,6 @@
               type="textarea"
               outlined
               class="q-ma-lg"
-              llenar
-              este
-              campo
               :rules="[(val) => !!val || 'Debe llenar este campo']"
             />
 
@@ -138,7 +213,7 @@
                 outlined
                 prefix="$"
                 min="0"
-                step="0.50"
+                step="0.1"
                 :rules="[
                   (val) => !!val || 'Debe llenar este campo',
                   (val) => val > 0 || 'El precio debe ser mayor que cero',
@@ -154,7 +229,7 @@
               icon="cancel"
               label="Cancelar"
               to="/"
-              class="gt-xs"
+              class="gt-sm"
             />
             <q-btn
               color="black"
@@ -162,63 +237,77 @@
               type="submit"
               icon="save"
               label="Crear"
-              class="gt-xs"
+              class="gt-sm"
             />
           </div>
         </div>
       </div>
     </div>
 
-    <div class="row q-mx-lg q-mb-lg" style="padding-bottom: 75px">
-      <div style="border: 3px solid #2a7c13" class="col-12 col-md-6">
+    <div class="row q-mx-lg q-mb-lg gt-sm" style="padding-bottom: 75px">
+      <div class="col-12 col-md-7" style="border: 3px solid #2a7c13; min-width: 0">
         <h6 class="q-ma-md q-mt-none">Imágenes</h6>
 
-        <div class="row q-ma-lg items-center q-col-gutter-md">
+        <div class="row no-wrap q-col-gutter-sm q-pa-md items-center">
           <div class="col-auto">
             <div class="column q-gutter-md">
-              <q-btn round color="primary" text-color="white" icon="add">
+              <q-btn round color="primary" icon="add">
+                <q-tooltip style="font-size: 14px"> Agregar imagen </q-tooltip>
                 <q-file
                   v-model="filesImages"
                   multiple
                   append
                   accept=".jpg, image/*"
                   style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer"
-                  :rules="[
-                    (val) => (val && val.length > 0) || 'Debe seleccionar al menos una imagen',
-                  ]"
                 />
               </q-btn>
+
               <q-btn
                 round
                 :disable="deshabilitarBotonEliminarImagenes"
-                @click="eliminarUltimaImagen"
+                @click="eliminarImagenActual"
                 color="primary"
-                text-color="white"
                 icon="remove"
-              />
+              >
+                <q-tooltip style="font-size: 14px"> Eliminar Imagen </q-tooltip>
+              </q-btn>
             </div>
           </div>
 
-          <div class="col q-px-md">
-            <table style="width: auto; text-align: left; border-spacing: 12px 4px">
-              <thead>
-                <tr class="text-weight-bold">
-                  <th>N</th>
-                  <th>Tamaño</th>
-                  <th>Tipo</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(imagen, index) in filesImages" :key="imagen" :name="index">
-                  <td>{{ index + 1 }}</td>
-                  <td>{{ (imagen.size / (1024 * 1024)).toFixed(2) }} MB</td>
-                  <td>{{ imagen.type }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="col-4 flex items-center" style="min-width: 0">
+            <div
+              class="full-width"
+              style="
+                height: 400px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                display: flex;
+                align-items: center;
+              "
+            >
+              <table style="width: 100%; table-layout: fixed; text-align: left; border-spacing: 0">
+                <thead>
+                  <tr class="text-weight-bold">
+                    <th style="width: 15%">N</th>
+                    <th style="width: 35%">Tamaño</th>
+                    <th style="width: 50%">Tipo</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr v-for="(imagen, index) in filesImages" :key="imagen.name + index">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ (imagen.size / (1024 * 1024)).toFixed(4) }} MB</td>
+                    <td style="overflow-wrap: anywhere">
+                      {{ imagen.type }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="col-auto">
+          <div class="col" style="min-width: 0">
             <q-carousel
               v-model="slide"
               animated
@@ -227,7 +316,7 @@
               infinite
               control-type="regular"
               control-color="primary"
-              style="width: 70%; height: 400px; margin: 0 auto; padding: 0"
+              style="width: 100%; height: 400px"
             >
               <q-carousel-slide
                 v-for="(imagen, index) in imagenesURL"
@@ -240,27 +329,28 @@
             </q-carousel>
           </div>
         </div>
-        <div class="botones-flotantes">
-          <q-btn
-            style="background-color: #124d1c; color: white"
-            label="Cancelar"
-            color="black"
-            text-color="white"
-            icon="cancel"
-            to="/"
-            class="lt-sm"
-          />
-          <q-btn
-            style="background-color: #124d1c; color: white"
-            color="black"
-            text-color="white"
-            type="submit"
-            icon="save"
-            label="Crear Anuncio"
-            class="lt-sm"
-          />
-        </div>
       </div>
+    </div>
+
+    <div class="botones-flotantes">
+      <q-btn
+        style="background-color: #124d1c; color: white"
+        label="Cancelar"
+        color="black"
+        text-color="white"
+        icon="cancel"
+        to="/"
+        class="lt-md"
+      />
+      <q-btn
+        style="background-color: #124d1c; color: white"
+        color="black"
+        text-color="white"
+        type="submit"
+        icon="save"
+        label="Crear Anuncio"
+        class="lt-md"
+      />
     </div>
   </q-form>
 </template>
@@ -276,7 +366,7 @@ import { api } from '@/boot/axios'
 const $q = useQuasar()
 const marcaText = ref('')
 const colorTelText = ref('')
-const pantallaText = ref(0.0)
+const pantallaText = ref(6.0)
 const tituloText = ref('')
 const vendedorText = ref('')
 const telefonoText = ref('')
@@ -285,8 +375,8 @@ const descripcionText = ref('')
 const precioText = ref(0.0)
 
 const sistemaOperativo = ref(null)
-const gbRam = ref(0.0)
-const gbRom = ref(0.0)
+const gbRam = ref(6.0)
+const gbRom = ref(8.0)
 const estadoSeleccionado = ref('Nuevo')
 const opcionesEstado = [
   {
@@ -380,8 +470,9 @@ async function subirImagenes(idDocumento) {
   }
 }
 
-function eliminarUltimaImagen() {
-  filesImages.value.pop()
+function eliminarImagenActual() {
+  filesImages.value.splice(slide.value - 1, 1)
+  slide.value = 1
 }
 
 async function guardarAnuncio() {
@@ -424,12 +515,27 @@ function errorDeValidacion() {
   bottom: 50px;
   left: 50%;
   transform: translateX(-50%);
-
   display: flex;
   flex-direction: row;
   gap: 12px;
-
   z-index: 9999;
   padding-top: 520px;
+}
+
+.carousel-telefono {
+  position: relative;
+  width: 100%;
+  height: 300px;
+}
+
+.botones-carrusel-telefono {
+  position: absolute;
+  top: 225px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
 }
 </style>
