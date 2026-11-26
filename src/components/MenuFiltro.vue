@@ -41,8 +41,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import { defineProps } from 'vue'
+import { computed, defineProps, ref, watch } from 'vue'
 
 const props = defineProps({
   listaMarcas: Array,
@@ -51,13 +50,16 @@ const props = defineProps({
   cantidadesPantallas: Array,
   listaSistemas: Array,
   cantidadesSistemas: Array,
+  listaSeleccionadosMarcaInicial: Array,
+  listaSeleccionadosPantallaInicial: Array,
+  listaSeleccionadosSistemaInicial: Array,
+  toogleNuevoInicial: Boolean,
 })
 
-const nuevoToggle = ref(false)
-
-const listaSeleccionadosMarca = ref([])
-const listaSeleccionadosSistema = ref([])
-const listaSeleccionadosPantalla = ref([])
+const nuevoToggle = ref(props.toogleNuevoInicial)
+const listaSeleccionadosMarca = ref(props.listaSeleccionadosMarcaInicial)
+const listaSeleccionadosSistema = ref(props.listaSeleccionadosSistemaInicial)
+const listaSeleccionadosPantalla = ref(props.listaSeleccionadosPantallaInicial)
 
 const emit = defineEmits([
   'toogleNuevo',
@@ -86,6 +88,34 @@ const listaOpcionesPantalla = computed(() => {
     value: `${pulgadas}`,
   }))
 })
+
+watch(
+  () => props.toogleNuevoInicial,
+  (newValue) => {
+    nuevoToggle.value = newValue
+  },
+)
+
+watch(
+  () => props.listaSeleccionadosMarcaInicial,
+  (newValue) => {
+    listaSeleccionadosMarca.value = newValue
+  },
+)
+
+watch(
+  () => props.listaSeleccionadosPantallaInicial,
+  (newValue) => {
+    listaSeleccionadosPantalla.value = newValue
+  },
+)
+
+watch(
+  () => props.listaSeleccionadosSistemaInicial,
+  (newValue) => {
+    listaSeleccionadosSistema.value = newValue
+  },
+)
 
 function eventoToogleNuevo() {
   emit('toogleNuevo', { valorNuevo: nuevoToggle.value })

@@ -14,6 +14,10 @@
             :cantidades-marcas="cantidadesMarcas"
             :cantidades-pantallas="cantidadesPantallas"
             :cantidades-sistemas="cantidadesSistemas"
+            :lista-seleccionados-marca-inicial="listaOpcionesSeleccionadasMarca"
+            :lista-seleccionados-pantalla-inicial="listaOpcionesSeleccionadasPantalla"
+            :lista-seleccionados-sistema-inicial="listaOpcionesSeleccionadasSistema"
+            :toogle-nuevo-inicial="filtrarPorNuevo"
           />
         </div>
       </div>
@@ -89,6 +93,10 @@
                         :cantidades-marcas="cantidadesMarcas"
                         :cantidades-pantallas="cantidadesPantallas"
                         :cantidades-sistemas="cantidadesSistemas"
+                        :lista-seleccionados-marca-inicial="listaOpcionesSeleccionadasMarca"
+                        :lista-seleccionados-pantalla-inicial="listaOpcionesSeleccionadasPantalla"
+                        :lista-seleccionados-sistema-inicial="listaOpcionesSeleccionadasSistema"
+                        :toogle-nuevo-inicial="filtrarPorNuevo"
                       />
                     </div>
                   </q-menu>
