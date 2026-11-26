@@ -8,7 +8,6 @@
 import { computed } from 'vue'
 import { Bar } from 'vue-chartjs'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-
 import {
   Chart as ChartJS,
   Title,
@@ -24,8 +23,6 @@ const props = defineProps({
   ejeY: Array,
   textoTitulo: String,
 })
-
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ChartDataLabels)
 
 const chartData = computed(() => ({
   labels: props.ejeX,
@@ -79,4 +76,6 @@ const chartOptions = {
     },
   },
 }
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ChartDataLabels)
 </script>

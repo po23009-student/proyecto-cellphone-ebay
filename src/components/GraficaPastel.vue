@@ -7,9 +7,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Pie } from 'vue-chartjs'
-
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from 'chart.js'
-
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 
 const props = defineProps({
@@ -17,8 +15,6 @@ const props = defineProps({
   porcentajes: Array,
   textoTitulo: String,
 })
-
-ChartJS.register(Title, Tooltip, Legend, ArcElement, ChartDataLabels)
 
 const chartData = computed(() => ({
   labels: props.listaElementos,
@@ -63,4 +59,6 @@ const chartOptions = {
     },
   },
 }
+
+ChartJS.register(Title, Tooltip, Legend, ArcElement, ChartDataLabels)
 </script>

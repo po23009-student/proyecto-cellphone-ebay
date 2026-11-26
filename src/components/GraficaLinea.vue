@@ -7,7 +7,6 @@
 <script setup>
 import { computed } from 'vue'
 import { Line } from 'vue-chartjs'
-
 import {
   Chart as ChartJS,
   Title,
@@ -24,8 +23,6 @@ const props = defineProps({
   ejeY: Array,
   textoTitulo: String,
 })
-
-ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale)
 
 const chartData = computed(() => ({
   labels: props.ejeX,
@@ -63,4 +60,6 @@ const chartOptions = {
     },
   },
 }
+
+ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale)
 </script>
