@@ -26,7 +26,7 @@ const chartData = computed(() => ({
     {
       label: 'Porcentaje',
       data: props.porcentajes,
-      backgroundColor: ['#396000', '#186049', '#8BBB92'],
+      backgroundColor: '#396000',
       borderColor: '#FFFFFF',
       borderWidth: 2,
     },

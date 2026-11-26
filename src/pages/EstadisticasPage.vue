@@ -50,7 +50,7 @@
       <div class="col-12 col-md-8">
         <GraficaLinea
           :eje-x="listaIndices"
-          :eje-y="listaCompras"
+          :eje-y="listaCompras.toReversed()"
           texto-titulo="Articulos agregados"
         />
       </div>
@@ -59,14 +59,8 @@
     <div class="row q-ma-md q-pa-md">
       <div class="col-12 col-md-8">
         <GraficaBarras
-          :eje-x="['Samsung', 'Huawei', 'Nokia', 'iPhone', 'Xiaomi']"
-          :eje-y="[
-            (productosSamsung / listaAnuncios.length) * 100,
-            (productosHuawei / listaAnuncios.length) * 100,
-            (productosNokia / listaAnuncios.length) * 100,
-            (productosIPhone / listaAnuncios.length) * 100,
-            (productosXiaomi / listaAnuncios.length) * 100,
-          ]"
+          :eje-x="listaMarcas"
+          :eje-y="cantidadesMarcas.map((cantidad) => (cantidad / listaAnuncios.length) * 100)"
           texto-titulo="Porcentaje de Productos por Marca"
         />
       </div>
@@ -74,8 +68,10 @@
     <div class="row q-ma-md q-pa-md">
       <div class="col-12 col-md-8">
         <GraficaPastel
-          :lista-elementos="['Android', 'Windows', 'iOS']"
-          :porcentajes="[40, 30, 20]"
+          :lista-elementos="listaSistemas"
+          :porcentajes="
+            cantidadesSistemas.map((cantidad) => (cantidad / listaAnuncios.length) * 100)
+          "
           texto-titulo="Porcentaje de Productos por Sistema Operativo"
         />
       </div>
@@ -93,23 +89,24 @@ import GraficaBarras from '@/components/GraficaBarras.vue'
 import GraficaPastel from '@/components/GraficaPastel.vue'
 
 const $q = useQuasar()
-const listaAnuncios = ref([])
-const listaMarcas = ref([])
+const cargando = ref(true)
+
 const listaCompras = ref([])
 const listaIndices = ref([])
-const productosSamsung = ref(0)
-const productosHuawei = ref(0)
-const productosNokia = ref(0)
-const productosIPhone = ref(0)
-const productosXiaomi = ref(0)
-const cargando = ref(true)
+const listaAnuncios = ref([])
+const listaMarcas = ref([])
+const listaSistemas = ref([])
+const cantidadesMarcas = ref([])
+const cantidadesSistemas = ref([])
 
 const props = defineProps({
   productosEnCarrito: Number,
 })
 
-onMounted(() => {
-  obtenerTodosDocumentos()
+onMounted(async () => {
+  await obtenerTodosDocumentos()
+  cargarMarcasParaGrafica()
+  cargarSistemasParaGrafica()
 })
 
 async function obtenerTodosDocumentos() {
@@ -123,16 +120,6 @@ async function obtenerTodosDocumentos() {
     listaAnuncios.value.forEach((anuncio) => {
       listaCompras.value.push(anuncio.precio_telefono)
       listaIndices.value.push(listaAnuncios.value.indexOf(anuncio) + 1)
-
-      if (!listaMarcas.value.includes(anuncio.marca_telefono)) {
-        listaMarcas.value.push(anuncio.marca_telefono)
-      }
-
-      if (anuncio.marca_telefono === 'Samsung') productosSamsung.value++
-      if (anuncio.marca_telefono === 'Huawei') productosHuawei.value++
-      if (anuncio.marca_telefono === 'Nokia') productosNokia.value++
-      if (anuncio.marca_telefono === 'iPhone') productosIPhone.value++
-      if (anuncio.marca_telefono === 'Xiaomi') productosXiaomi.value++
     })
 
     listaCompras.value = listaAnuncios.value.map((anuncio) => anuncio.precio_telefono)
@@ -143,5 +130,39 @@ async function obtenerTodosDocumentos() {
       message: `Error al obtener los anuncios: ${e.message}`,
     })
   }
+}
+
+function cargarMarcasParaGrafica() {
+  listaAnuncios.value.forEach((anuncio) => {
+    if (!listaMarcas.value.includes(anuncio.marca_telefono)) {
+      listaMarcas.value.push(anuncio.marca_telefono)
+      cantidadesMarcas.value.push(0)
+    }
+  })
+
+  listaAnuncios.value.forEach((anuncio) => {
+    if (listaMarcas.value.includes(anuncio.marca_telefono)) {
+      let indice = listaMarcas.value.indexOf(anuncio.marca_telefono)
+
+      cantidadesMarcas.value[indice]++
+    }
+  })
+}
+
+function cargarSistemasParaGrafica() {
+  listaAnuncios.value.forEach((anuncio) => {
+    if (!listaSistemas.value.includes(anuncio.sistema_operativo_telefono)) {
+      listaSistemas.value.push(anuncio.sistema_operativo_telefono)
+      cantidadesSistemas.value.push(0)
+    }
+  })
+
+  listaAnuncios.value.forEach((anuncio) => {
+    if (listaSistemas.value.includes(anuncio.sistema_operativo_telefono)) {
+      let indice = listaSistemas.value.indexOf(anuncio.sistema_operativo_telefono)
+
+      cantidadesSistemas.value[indice]++
+    }
+  })
 }
 </script>

@@ -60,7 +60,7 @@ const chartOptions = {
         weight: 'bold',
         size: 12,
       },
-      formatter: (value) => `${value.toFixed(2)}%`,
+      formatter: (value) => `${value.toFixed(1)}%`,
     },
   },
   scales: {
@@ -73,7 +73,7 @@ const chartOptions = {
     },
     x: {
       title: {
-        display: true,
+        display: false,
         text: 'Marcas',
       },
     },

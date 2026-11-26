@@ -49,7 +49,7 @@ watch(
 
 async function obtenerImagenes() {
   imagenesLocales.value = []
-  let response = await api.get(`/imagenesfpi/${props.idAnuncio}`)
+  let response = await api.get(`/fpi-imagenes/${props.idAnuncio}`)
 
   if (response.status === 200) {
     documentoAttach.value = response.data
@@ -57,14 +57,14 @@ async function obtenerImagenes() {
     for (let att in documentoAttach.value._attachments) {
       let attname = att
 
-      let atturl = `${api.getUri()}/imagenesfpi/${props.idAnuncio}/${attname}`
+      let atturl = `${api.getUri()}/fpi-imagenes/${props.idAnuncio}/${attname}`
       imagenessrc.value.push(atturl)
     }
   }
 
   for (let archivo in documentoAttach.value._attachments) {
     let nombreArchivo = archivo
-    let urlArchivo = `${api.defaults.baseURL}/imagenesfpi/${props.idAnuncio}/${nombreArchivo}`
+    let urlArchivo = `${api.defaults.baseURL}/fpi-imagenes/${props.idAnuncio}/${nombreArchivo}`
     let response2 = await api.get(urlArchivo, { responseType: 'blob' })
 
     if (response2.status === 200) {

@@ -1,7 +1,17 @@
 <template>
   <div class="row">
     <div class="col-12 col-md-6">
-      <div>
+      <q-circular-progress
+        indeterminate
+        size="100px"
+        style="height: 100px"
+        :thickness="0.7"
+        color="secondary"
+        center-color="dark"
+        class="q-ma-md"
+        v-if="cargando"
+      />
+      <div v-if="cargando == false">
         <q-carousel
           v-model="slide"
           animated
@@ -96,6 +106,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 import { api } from '@/boot/axios'
 
+const cargando = ref(true)
 const slide = ref(1)
 const ruta = useRoute()
 const datosDocumento = ref({})
@@ -106,9 +117,10 @@ const imagenesLocales = ref([])
 
 const emit = defineEmits(['articuloComprado'])
 
-onMounted(() => {
-  obtenerDocumento(ruta.params.cid)
+onMounted(async () => {
+  await obtenerDocumento(ruta.params.cid)
   obtenerImagenes(ruta.params.cid)
+  cargando.value = false
 })
 
 async function obtenerDocumento(idDocumento) {
@@ -119,7 +131,7 @@ async function obtenerDocumento(idDocumento) {
 }
 
 async function obtenerImagenes(idDocumento) {
-  let response = await api.get(`/imagenesfpi/${idDocumento}`)
+  let response = await api.get(`/fpi-imagenes/${idDocumento}`)
 
   if (response.status === 200) {
     documentoAttach.value = response.data
@@ -127,14 +139,14 @@ async function obtenerImagenes(idDocumento) {
     for (let att in documentoAttach.value._attachments) {
       let attname = att
 
-      let atturl = `${api.getUri()}/imagenesfpi/${idDocumento}/${attname}`
+      let atturl = `${api.getUri()}/fpi-imagenes/${idDocumento}/${attname}`
       imagenessrc.value.push(atturl)
     }
   }
 
   for (let archivo in documentoAttach.value._attachments) {
     let nombreArchivo = archivo
-    let urlArchivo = `${api.defaults.baseURL}/imagenesfpi/${idDocumento}/${nombreArchivo}`
+    let urlArchivo = `${api.defaults.baseURL}/fpi-imagenes/${idDocumento}/${nombreArchivo}`
     let response2 = await api.get(urlArchivo, { responseType: 'blob' })
 
     if (response2.status === 200) {

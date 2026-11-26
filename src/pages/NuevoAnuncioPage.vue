@@ -96,8 +96,8 @@
               v-model.number="precioText"
               outlined
               prefix="$"
-              min="0"
-              step="0.1"
+              min="0.0"
+              step="0.01"
               :rules="[
                 (val) => !!val || 'Debe llenar este campo',
                 (val) => val > 0 || 'El precio debe ser mayor que cero',
@@ -178,6 +178,9 @@
               outlined
               v-model="sistemaOperativo"
               :options="['Android', 'Windows', 'iOS']"
+              use-input
+              use-chips
+              new-value-mode="add-unique"
               label="Sistema"
               class="q-ma-lg"
               :rules="[(val) => !!val || 'Debe seleccionar un Sistema Operativo']"
@@ -275,6 +278,9 @@
           outlined
           v-model="sistemaOperativo"
           :options="['Android', 'Windows', 'iOS']"
+          use-input
+          use-chips
+          new-value-mode="add-unique"
           label="Sistema"
           class="q-ma-lg"
           :rules="[(val) => !!val || 'Debe seleccionar un Sistema Operativo']"
@@ -356,8 +362,8 @@
                 v-model.number="precioText"
                 outlined
                 prefix="$"
-                min="0"
-                step="0.1"
+                min="0.0"
+                step="0.01"
                 :rules="[
                   (val) => !!val || 'Debe llenar este campo',
                   (val) => val > 0 || 'El precio debe ser mayor que cero',
@@ -566,10 +572,10 @@ async function subirImagenes(idDocumento) {
       message: 'No se han seleccionado imágenes para subir',
       position: 'top',
     })
-    return
+    return -1
   }
 
-  let coleccionCouchdb = '/imagenesfpi/'
+  let coleccionCouchdb = '/fpi-imagenes/'
   let rev = null
 
   try {
@@ -580,7 +586,7 @@ async function subirImagenes(idDocumento) {
       console.log('El documento no existe aún')
     } else {
       console.error('Error al consultar el documento:', error.response?.data || error.message)
-      return
+      return -1
     }
   }
 
@@ -606,6 +612,7 @@ async function subirImagenes(idDocumento) {
       console.log(`Imagen subida correctamente: ${file.name}`)
       anuncio.value.ruta_imagenes_telefono = `${api.defaults.baseURL}${coleccionCouchdb}${idDocumento}`
       anuncio.value.rev = response.data.rev
+      return 0
     } else {
       console.log(`Error al subir la imagen: ${file.name}`)
     }
@@ -620,19 +627,21 @@ function eliminarImagenActual() {
 async function guardarAnuncio() {
   try {
     const docRef = await addDoc(collection(db, 'anuncios'), anuncio.value)
-    await subirImagenes(docRef.id)
+    const resultadoSubirImagenes = await subirImagenes(docRef.id)
 
-    await updateDoc(doc(db, 'anuncios', docRef.id), {
-      ruta_imagenes_telefono: anuncio.value.ruta_imagenes_telefono,
-    })
+    if (resultadoSubirImagenes === 0) {
+      await updateDoc(doc(db, 'anuncios', docRef.id), {
+        ruta_imagenes_telefono: anuncio.value.ruta_imagenes_telefono,
+      })
 
-    $q.notify({
-      type: 'positive',
-      position: 'top',
-      message: 'Anuncio guardado con éxito',
-    })
+      $q.notify({
+        type: 'positive',
+        position: 'top',
+        message: 'Anuncio guardado con éxito',
+      })
 
-    router.push('/')
+      router.push('/')
+    }
   } catch (e) {
     $q.notify({
       type: 'negative',

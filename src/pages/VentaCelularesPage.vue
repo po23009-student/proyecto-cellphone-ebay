@@ -10,8 +10,10 @@
             @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
             :lista-marcas="listaMarcas"
             :lista-pantallas="listaPantallas"
+            :lista-sistemas="listaSistemas"
             :cantidades-marcas="cantidadesMarcas"
             :cantidades-pantallas="cantidadesPantallas"
+            :cantidades-sistemas="cantidadesSistemas"
           />
         </div>
       </div>
@@ -25,8 +27,8 @@
                 v-model.number="precioInicial"
                 type="number"
                 prefix="$"
-                min="0"
-                step="0.50"
+                min="0.0"
+                step="0.01"
                 label="Desde"
                 outlined
                 style="width: 110px"
@@ -36,8 +38,8 @@
                 v-model.number="precioFinal"
                 type="number"
                 prefix="$"
-                min="0"
-                step="0.50"
+                min="0.0"
+                step="0.01"
                 label="Hasta"
                 outlined
                 style="width: 110px"
@@ -74,6 +76,10 @@
                         @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
                         :lista-marcas="listaMarcas"
                         :lista-pantallas="listaPantallas"
+                        :lista-sistemas="listaSistemas"
+                        :cantidades-marcas="cantidadesMarcas"
+                        :cantidades-pantallas="cantidadesPantallas"
+                        :cantidades-sistemas="cantidadesSistemas"
                       />
                     </div>
                   </q-menu>
@@ -162,6 +168,7 @@ const ultimaPagina = ref(5)
 
 const listaMarcas = ref([])
 const listaPantallas = ref([])
+const listaSistemas = ref([])
 const listaOpcionesSeleccionadasMarca = ref([])
 const listaOpcionesSeleccionadasPantalla = ref([])
 const listaOpcionesSeleccionadasSistema = ref([])
@@ -170,6 +177,7 @@ const anunciosPaginados = ref([])
 const anunciosDocs = ref([])
 const cantidadesMarcas = ref([])
 const cantidadesPantallas = ref([])
+const cantidadesSistemas = ref([])
 
 watch(paginaActual, () => {
   paginarAnuncios()
@@ -228,7 +236,9 @@ const anunciosFiltrados = computed(() => {
 
   if (listaOpcionesSeleccionadasPantalla.value.length > 0) {
     listaAnunciosFiltrados = listaAnunciosFiltrados.filter((anuncio) =>
-      listaOpcionesSeleccionadasPantalla.value.includes(anuncio.pantalla_pulgadas_telefono),
+      listaOpcionesSeleccionadasPantalla.value.includes(
+        anuncio.pantalla_pulgadas_telefono.toString(),
+      ),
     )
   }
 
@@ -249,6 +259,7 @@ onMounted(async () => {
   await obtenerTodosDocumentos()
   cargarPantallasParaMenu()
   cargarMarcasParaMenu()
+  cargarSistemasParaMenu()
 })
 
 function determinarRangoPrecios() {
@@ -309,10 +320,17 @@ async function obtenerTodosDocumentos() {
 
     cargando.value = false
   } catch (e) {
+    let mensajeTraducido = ''
+
+    if (e.message === 'Reduce of empty array with no initial value') {
+      mensajeTraducido = 'Lista Vacía'
+    }
+
     $q.notify({
       type: 'negative',
-      message: `Error al obtener los anuncios: ${e.message}`,
+      message: `Error al obtener los anuncios: ${mensajeTraducido || e.message}`,
     })
+    cargando.value = false
   }
 }
 
@@ -335,8 +353,8 @@ function cargarMarcasParaMenu() {
 
 function cargarPantallasParaMenu() {
   anunciosFiltrados.value.forEach((anuncio) => {
-    if (!listaPantallas.value.includes(anuncio.pantalla_pulgadas_telefono.toString())) {
-      listaPantallas.value.push(anuncio.pantalla_pulgadas_telefono.toString())
+    if (!listaPantallas.value.includes(anuncio.pantalla_pulgadas_telefono)) {
+      listaPantallas.value.push(anuncio.pantalla_pulgadas_telefono)
       cantidadesPantallas.value.push(0)
     }
   })
@@ -344,8 +362,24 @@ function cargarPantallasParaMenu() {
   anunciosFiltrados.value.forEach((anuncio) => {
     if (listaPantallas.value.includes(anuncio.pantalla_pulgadas_telefono)) {
       let indice = listaPantallas.value.indexOf(anuncio.pantalla_pulgadas_telefono)
-
       cantidadesPantallas.value[indice]++
+    }
+  })
+}
+
+function cargarSistemasParaMenu() {
+  anunciosFiltrados.value.forEach((anuncio) => {
+    if (!listaSistemas.value.includes(anuncio.sistema_operativo_telefono)) {
+      listaSistemas.value.push(anuncio.sistema_operativo_telefono)
+      cantidadesSistemas.value.push(0)
+    }
+  })
+
+  anunciosFiltrados.value.forEach((anuncio) => {
+    if (listaSistemas.value.includes(anuncio.sistema_operativo_telefono)) {
+      let indice = listaSistemas.value.indexOf(anuncio.sistema_operativo_telefono)
+
+      cantidadesSistemas.value[indice]++
     }
   })
 }

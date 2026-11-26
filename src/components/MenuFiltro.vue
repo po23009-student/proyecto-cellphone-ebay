@@ -49,6 +49,8 @@ const props = defineProps({
   cantidadesMarcas: Array,
   listaPantallas: Array,
   cantidadesPantallas: Array,
+  listaSistemas: Array,
+  cantidadesSistemas: Array,
 })
 
 const nuevoToggle = ref(false)
@@ -57,21 +59,6 @@ const listaSeleccionadosMarca = ref([])
 const listaSeleccionadosSistema = ref([])
 const listaSeleccionadosPantalla = ref([])
 
-const listaOpcionesSistema = [
-  {
-    label: 'Android',
-    value: 'Android',
-  },
-  {
-    label: 'Windows',
-    value: 'Windows',
-  },
-  {
-    label: 'iOS',
-    value: 'iOS',
-  },
-]
-
 const emit = defineEmits([
   'toogleNuevo',
   'marcaSeleccionada',
@@ -79,19 +66,26 @@ const emit = defineEmits([
   'pantallaSeleccionada',
 ])
 
-const listaOpcionesMarca = computed(() =>
-  props.listaMarcas.map((marca, index) => ({
+const listaOpcionesSistema = computed(() => {
+  return props.listaSistemas.map((sistema, index) => ({
+    label: `${sistema} (${props.cantidadesSistemas.at(index)})`,
+    value: `${sistema}`,
+  }))
+})
+
+const listaOpcionesMarca = computed(() => {
+  return props.listaMarcas.map((marca, index) => ({
     label: `${marca} (${props.cantidadesMarcas.at(index)})`,
     value: `${marca}`,
-  })),
-)
+  }))
+})
 
-const listaOpcionesPantalla = computed(() =>
-  props.listaPantallas.map((pulgadas, index) => ({
+const listaOpcionesPantalla = computed(() => {
+  return props.listaPantallas.map((pulgadas, index) => ({
     label: `${pulgadas} (${props.cantidadesPantallas.at(index)})`,
     value: `${pulgadas}`,
-  })),
-)
+  }))
+})
 
 function eventoToogleNuevo() {
   emit('toogleNuevo', { valorNuevo: nuevoToggle.value })
