@@ -166,7 +166,7 @@
             <q-input
               v-model.number="pantallaText"
               type="number"
-              step="0.1"
+              step="0.01"
               min="6"
               outlined
               label="Pantalla (Pulgadas)"
@@ -175,12 +175,12 @@
             />
 
             <q-select
-              outlined
               v-model="sistemaOperativo"
               :options="['Android', 'Windows', 'iOS']"
               use-input
               use-chips
               new-value-mode="add-unique"
+              outlined
               label="Sistema"
               class="q-ma-lg"
               :rules="[(val) => !!val || 'Debe seleccionar un Sistema Operativo']"
@@ -266,7 +266,7 @@
         <q-input
           v-model.number="pantallaText"
           type="number"
-          step="0.1"
+          step="0.01"
           min="6"
           outlined
           label="Pantalla (Pulgadas)"

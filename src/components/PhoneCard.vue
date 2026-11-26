@@ -5,7 +5,7 @@
     :imagenesTelefono="imagenesLocales"
     @click="$router.push(`/celulardetalle/${idAnuncio}`)"
   >
-    <q-img :src="imagenesLocales[0]" fit="contain" alt="Imagen del teléfono" />
+    <q-img :src="imagenesLocales.toReversed()[0]" fit="contain" alt="Imagen del teléfono" />
 
     <q-card-section>
       <div class="text-h6 text-primary">$ {{ precioTelefono }}</div>
