@@ -8,7 +8,9 @@
     <q-img :src="imagenesLocales.toReversed()[0]" fit="contain" alt="Imagen del teléfono" />
 
     <q-card-section>
-      <div class="text-h6 text-primary">$ {{ precioTelefono }}</div>
+      <div class="text-h6 text-primary" :class="{ 'text-green-14': Dark.isActive }">
+        $ {{ precioTelefono }}
+      </div>
 
       <div>
         {{ marcaTelefono }} {{ modeloTelefono }}, Pantalla de {{ pantallaPulgadasTelefono }}"
@@ -22,6 +24,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { api } from '@/boot/axios'
+import { Dark } from 'quasar'
 
 const props = defineProps({
   idAnuncio: String,

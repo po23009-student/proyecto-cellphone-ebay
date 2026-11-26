@@ -111,7 +111,9 @@
             class="q-ma-lg"
             :rules="[
               (val) => !!val || 'Debe llenar este campo',
-              (val) => /^[A-Za-z\s]+$/.test(val) || 'El campo debe estar compuesto por texto',
+              (val) =>
+                /^[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s\.]+$/.test(val) ||
+                'El campo debe estar compuesto por texto',
             ]"
           />
           <q-input
@@ -167,7 +169,7 @@
               v-model.number="pantallaText"
               type="number"
               step="0.01"
-              min="6"
+              min="3"
               outlined
               label="Pantalla (Pulgadas)"
               class="q-ma-lg"
@@ -192,7 +194,7 @@
                   outlined
                   v-model.number="gbRom"
                   step="1"
-                  min="8"
+                  min="2"
                   type="number"
                   class="q-ma-lg"
                   label="ROM (GB)"
@@ -267,7 +269,7 @@
           v-model.number="pantallaText"
           type="number"
           step="0.01"
-          min="6"
+          min="3"
           outlined
           label="Pantalla (Pulgadas)"
           class="q-ma-lg"
@@ -292,7 +294,7 @@
               outlined
               v-model.number="gbRom"
               step="1"
-              min="8"
+              min="2"
               type="number"
               class="q-ma-lg"
               label="ROM (GB)"
@@ -331,7 +333,9 @@
               class="q-ma-lg"
               :rules="[
                 (val) => !!val || 'Debe llenar este campo',
-                (val) => /^[A-Za-z\s]+$/.test(val) || 'El campo debe estar compuesto por texto',
+                (val) =>
+                  /^[A-Za-záéíóúÁÉÍÓÚñÑüÜ\s\.]+$/.test(val) ||
+                  'El campo debe estar compuesto por texto',
               ]"
             />
             <q-input
@@ -507,7 +511,7 @@
 import { useQuasar } from 'quasar'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { collection, doc, addDoc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { collection, doc, addDoc, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 import { api } from '@/boot/axios'
 
@@ -642,6 +646,8 @@ async function guardarAnuncio() {
       })
 
       router.push('/')
+    } else {
+      await deleteDoc(doc(db, 'anuncios', docRef.id))
     }
   } catch (e) {
     $q.notify({

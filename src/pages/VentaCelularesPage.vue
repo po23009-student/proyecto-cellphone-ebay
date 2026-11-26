@@ -53,6 +53,7 @@
                 flat
                 color="primary"
                 :icon="precioAscendente ? 'arrow_upward' : 'arrow_downward'"
+                :class="{ 'text-green-14': Dark.isActive }"
                 label="Precio"
                 @click="ordenarPorPrecio"
               />
@@ -60,13 +61,21 @@
               <q-btn
                 flat
                 color="primary"
+                :class="{ 'text-green-14': Dark.isActive }"
                 :icon="fechaAscendente ? 'arrow_upward' : 'arrow_downward'"
                 label="Fecha"
                 @click="ordenarPorFecha"
               />
 
               <div v-if="cargando == false">
-                <q-btn flat round color="secondary" icon="filter_alt" class="lt-md">
+                <q-btn
+                  flat
+                  round
+                  color="secondary"
+                  :class="{ 'text-green-14': Dark.isActive }"
+                  icon="filter_alt"
+                  class="lt-md"
+                >
                   <q-menu>
                     <div style="width: 250px">
                       <MenuFiltro
@@ -89,7 +98,7 @@
           </q-card-section>
         </q-card>
 
-        <div class="row q-col-gutter-lg">
+        <div class="row q-col-gutter-md">
           <q-circular-progress
             indeterminate
             size="100px"
@@ -114,7 +123,7 @@
             :romGbTelefono="anuncio.rom_gb_telefono"
             :ramGbTelefono="anuncio.ram_gb_telefono"
             :colorTelefono="anuncio.color_telefono"
-            class="col-6 col-sm-5 col-md-2"
+            class="col-6 col-xs-6 col-sm-5 col-md-2"
           />
         </div>
 
@@ -131,6 +140,7 @@
           <q-select
             v-model="articulosPorPagina"
             :options="[5, 10, 15, 20, 25, 50]"
+            options-selected-class="text-green-14"
             label="Artículos por página"
             dense
             outlined
@@ -146,7 +156,7 @@
 import PhoneCard from '@/components/PhoneCard.vue'
 import MenuFiltro from '@/components/MenuFiltro.vue'
 import { ref, onMounted, computed, watch, defineProps } from 'vue'
-import { useQuasar } from 'quasar'
+import { useQuasar, Dark } from 'quasar'
 import { collection, query, getDocs } from 'firebase/firestore'
 import { db } from '@/boot/firebase'
 
