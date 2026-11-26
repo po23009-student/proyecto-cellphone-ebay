@@ -611,12 +611,13 @@ async function subirImagenes(idDocumento) {
     if (response.status === 201) {
       console.log(`Imagen subida correctamente: ${file.name}`)
       anuncio.value.ruta_imagenes_telefono = `${api.defaults.baseURL}${coleccionCouchdb}${idDocumento}`
-      anuncio.value.rev = response.data.rev
-      return 0
+      rev = response.data.rev
     } else {
       console.log(`Error al subir la imagen: ${file.name}`)
     }
   }
+
+  return 0
 }
 
 function eliminarImagenActual() {
