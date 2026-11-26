@@ -10,6 +10,8 @@
             @pantalla-seleccionada="eventoFiltrarPorPulgadasPantalla"
             :lista-marcas="listaMarcas"
             :lista-pantallas="listaPantallas"
+            :cantidades-marcas="cantidadesMarcas"
+            :cantidades-pantallas="cantidadesPantallas"
           />
         </div>
       </div>
@@ -166,6 +168,8 @@ const listaOpcionesSeleccionadasSistema = ref([])
 const listaAnuncios = ref([])
 const anunciosPaginados = ref([])
 const anunciosDocs = ref([])
+const cantidadesMarcas = ref([])
+const cantidadesPantallas = ref([])
 
 watch(paginaActual, () => {
   paginarAnuncios()
@@ -316,6 +320,15 @@ function cargarMarcasParaMenu() {
   anunciosFiltrados.value.forEach((anuncio) => {
     if (!listaMarcas.value.includes(anuncio.marca_telefono)) {
       listaMarcas.value.push(anuncio.marca_telefono)
+      cantidadesMarcas.value.push(0)
+    }
+  })
+
+  anunciosFiltrados.value.forEach((anuncio) => {
+    if (listaMarcas.value.includes(anuncio.marca_telefono)) {
+      let indice = listaMarcas.value.indexOf(anuncio.marca_telefono)
+
+      cantidadesMarcas.value[indice]++
     }
   })
 }
@@ -324,6 +337,15 @@ function cargarPantallasParaMenu() {
   anunciosFiltrados.value.forEach((anuncio) => {
     if (!listaPantallas.value.includes(anuncio.pantalla_pulgadas_telefono.toString())) {
       listaPantallas.value.push(anuncio.pantalla_pulgadas_telefono.toString())
+      cantidadesPantallas.value.push(0)
+    }
+  })
+
+  anunciosFiltrados.value.forEach((anuncio) => {
+    if (listaPantallas.value.includes(anuncio.pantalla_pulgadas_telefono)) {
+      let indice = listaPantallas.value.indexOf(anuncio.pantalla_pulgadas_telefono)
+
+      cantidadesPantallas.value[indice]++
     }
   })
 }

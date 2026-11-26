@@ -46,7 +46,9 @@ import { defineProps } from 'vue'
 
 const props = defineProps({
   listaMarcas: Array,
+  cantidadesMarcas: Array,
   listaPantallas: Array,
+  cantidadesPantallas: Array,
 })
 
 const nuevoToggle = ref(false)
@@ -78,16 +80,16 @@ const emit = defineEmits([
 ])
 
 const listaOpcionesMarca = computed(() =>
-  props.listaMarcas.map((marca) => ({
-    label: marca,
-    value: marca,
+  props.listaMarcas.map((marca, index) => ({
+    label: `${marca} (${props.cantidadesMarcas.at(index)})`,
+    value: `${marca}`,
   })),
 )
 
 const listaOpcionesPantalla = computed(() =>
-  props.listaPantallas.map((pulgadas) => ({
-    label: pulgadas,
-    value: pulgadas,
+  props.listaPantallas.map((pulgadas, index) => ({
+    label: `${pulgadas} (${props.cantidadesPantallas.at(index)})`,
+    value: `${pulgadas}`,
   })),
 )
 
