@@ -56,7 +56,7 @@
               <q-btn
                 flat
                 color="primary"
-                :icon="precioAscendente ? 'arrow_upward' : 'arrow_downward'"
+                :icon="precioAscendente ? 'arrow_downward' : 'arrow_upward'"
                 :class="{ 'text-green-14': Dark.isActive }"
                 label="Precio"
                 @click="ordenarPorPrecio"
@@ -66,7 +66,7 @@
                 flat
                 color="primary"
                 :class="{ 'text-green-14': Dark.isActive }"
-                :icon="fechaAscendente ? 'arrow_upward' : 'arrow_downward'"
+                :icon="fechaAscendente ? 'arrow_downward' : 'arrow_upward'"
                 label="Fecha"
                 @click="ordenarPorFecha"
               />
