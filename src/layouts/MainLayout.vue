@@ -14,7 +14,6 @@
 
         <q-icon name="campaign" size="lg" class="gt-xs" />
         <q-toolbar-title class="gt-xs"> Tienda CellPhone </q-toolbar-title>
-
         <q-input
           v-model="textoBusqueda"
           filled
@@ -23,10 +22,11 @@
           dense
           label="Buscar"
           class="q-ma-md"
+          :class="{ 'input-dark': Dark.isActive }"
           style="width: 250px"
         >
           <template #append>
-            <q-icon name="search" />
+            <q-icon name="search" :class="{ 'text-dark': Dark.isActive }" />
           </template>
         </q-input>
 
@@ -134,3 +134,14 @@ function actualizarCarrito() {
   })
 }
 </script>
+
+<style scoped>
+.input-dark :deep(.q-field__native),
+.input-dark :deep(.q-field__label) {
+  color: #000 !important;
+}
+
+.input-dark input {
+  caret-color: #4caf50;
+}
+</style>
